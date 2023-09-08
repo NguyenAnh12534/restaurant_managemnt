@@ -44,6 +44,6 @@ public class Item{
 
     @Override
     public String toString() {
-        return "ID: " + this.id + ", Name: " + this.name;
+        return "ID: " + this.id + ", Name: " + this.name + ", Price: " + this.price;
     }
 }

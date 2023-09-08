@@ -105,6 +105,7 @@ public class UserInputHandler {
             if (selectedMethod.getParameters().length == 1) {
                 this.selectedMethod.invoke(this.selectedController.getInstance(), this.values.get(0));
             } else if (selectedMethod.getParameters().length > 1){
+                this.selectedMethod.invoke(this.selectedController.getInstance(), this.values);
             } else {
                 this.selectedMethod.invoke(this.selectedController.getInstance());
             }

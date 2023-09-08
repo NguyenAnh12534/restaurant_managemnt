@@ -90,8 +90,6 @@ public class DbSet<T> {
     }
 
     private void initElements() {
-        if (this.elements.isEmpty()) {
             this.elements = this.dataDriver.getAll(targetClass);
-        }
     }
 }

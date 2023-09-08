@@ -16,7 +16,7 @@ public class RestaurantApplication {
         ControllerMapping  controllerMapping = new ControllerMapping(this.applicationContext);
         UserInputHandler userInputHandler = new UserInputHandler(controllerMapping);
 
-        while(!isTerminated){
+        while(true){
             userInputHandler.handleUserInput();
             isTerminated = true;
         }
