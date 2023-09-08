@@ -1,7 +1,11 @@
 package com.ha.app.ui.inputs;
 
+import com.ha.app.annotations.data_annotations.Entity;
 import com.ha.app.utils.depedency_injection.Bean;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -31,8 +35,8 @@ public class UserInputHandler {
 
     private void handleUserChooseController() {
         System.out.println("All controllers: ");
-        for(int i = 0; i < this.controllerMapping.getControllerBeans().size(); i++) {
-            System.out.println( i + 1 + ". " + this.controllerMapping.getControllerBeans().get(i).getName());
+        for (int i = 0; i < this.controllerMapping.getControllerBeans().size(); i++) {
+            System.out.println(i + 1 + ". " + this.controllerMapping.getControllerBeans().get(i).getName());
         }
         System.out.print("Please enter index of desired controller: ");
         boolean isInputFinished = false;
@@ -84,25 +88,80 @@ public class UserInputHandler {
 
     private void handleRequireInputFromUser() {
         Parameter[] parameters = selectedMethod.getParameters();
-
         for (Parameter parameter : parameters) {
-            System.out.print("Enter value for type " + parameter.getType().getSimpleName() + " : ");
-            Object value = scanner.nextLine();
+            Object value = null;
+            try {
+                value = requireInputOfField(parameter.getType());
 
-            if(parameter.getType().equals(int.class)) {
-                value = Integer.parseInt((String)value);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             this.values.add(value);
         }
     }
 
     private void executeSelectedFeature() {
-        try{
-            this.selectedMethod.invoke(this.selectedController.getInstance(), this.values.toArray());
-        }catch (Exception ex) {
+        try {
+            if (selectedMethod.getParameters().length == 1) {
+                this.selectedMethod.invoke(this.selectedController.getInstance(), this.values.get(0));
+            } else if (selectedMethod.getParameters().length > 1){
+            } else {
+                this.selectedMethod.invoke(this.selectedController.getInstance());
+            }
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
+    private Object requireInputOfField(Class<?> clazz) throws Exception {
+        if (clazz.isAnnotationPresent(Entity.class)) {
+            Field[] subFields = clazz.getDeclaredFields();
+            List<Object> entityProperties = new ArrayList<>();
+            for (Field subField : subFields) {
+                Object property = requireInputOfField(subField.getType());
+                entityProperties.add(property);
+            }
+            Class<?>[] types = new Class<?>[entityProperties.size()];
 
+            for (int i = 0; i < types.length; i++) {
+                types[i] = entityProperties.get(i).getClass();
+            }
+            Constructor constructor = clazz.getConstructor(types);
+            return constructor.newInstance(entityProperties.toArray());
+        }
+
+        boolean isInputValid = false;
+        System.out.print("Enter value for type " + clazz.getSimpleName() + " : ");
+        Object value = scanner.nextLine();
+        while (!isInputValid) {
+            try {
+                value = translateInput(value, clazz);
+                isInputValid = true;
+            } catch (IllegalArgumentException ex) {
+                System.out.println("Input not valid, please enter again");
+            }
+        }
+
+        return value;
+    }
+
+    private Object translateInput(Object inputValue, Class<?> clazz) {
+        String inputValueAsString = (String) inputValue;
+        switch (clazz.getSimpleName()) {
+            case "byte", "Byte", "short", "Short", "int", "Integer" -> {
+                inputValue = Integer.parseInt(inputValueAsString);
+            }
+            case "float", "Float", "double", "Double" -> {
+                inputValue = Double.parseDouble(inputValueAsString);
+            }
+            case "boolean", "Boolean" -> {
+                inputValue = Boolean.parseBoolean(inputValueAsString);
+            }
+            default -> {
+
+            }
+        }
+
+        return inputValue;
+    }
 }

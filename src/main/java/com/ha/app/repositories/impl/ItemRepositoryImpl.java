@@ -29,7 +29,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public void create(Item item) {
-
+        dbContext.getDbSetOf(Item.class).create(item);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.ha.app.data;
 
 import com.ha.app.data.drivers.DataDriver;
+import com.ha.app.entities.Item;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -76,6 +77,16 @@ public class DbSet<T> {
             return null;
 
         return elements.get(0);
+    }
+
+    public boolean create(Item item) {
+        this.dataDriver.appendObject(item);
+        return true;
+    }
+
+    public boolean create(List<Item> items){
+        this.dataDriver.appendAllObjects(items);
+        return true;
     }
 
     private void initElements() {

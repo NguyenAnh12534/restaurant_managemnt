@@ -6,11 +6,10 @@ import com.ha.app.ui.inputs.UserInputHandler;
 import com.ha.app.utils.depedency_injection.ApplicationContext;
 
 /**
- * Hello world!
+ * This is the entry point of the application
  */
 public class RestaurantApplication {
     private ApplicationContext applicationContext;
-    private DbContext dbContext;
 
     public void start() {
         boolean isTerminated = false;
@@ -23,11 +22,12 @@ public class RestaurantApplication {
         }
     }
 
-    public void useDbContext(DbContext dbContext) {
-        this.dbContext = dbContext;
-    }
-
     public static void main(String[] args)   {
+        String str = "asdas";
+        Object ob = str;
+        System.out.println(ob.getClass().getSimpleName());
+        System.out.println(str.getClass().getSimpleName());
+
         RestaurantApplication restaurantApplication = new RestaurantApplication();
         restaurantApplication.applicationContext = new ApplicationContext(restaurantApplication.getClass().getPackageName());
 
