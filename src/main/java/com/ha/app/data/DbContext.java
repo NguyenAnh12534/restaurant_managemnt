@@ -1,6 +1,6 @@
 package com.ha.app.data;
 
-import com.ha.app.annotations.data_annotations.Entity;
+import com.ha.app.annotations.data.Entity;
 import com.ha.app.constants.DataConstants;
 import com.ha.app.data.drivers.DataDriver;
 import com.ha.app.helpers.ClassScanner;

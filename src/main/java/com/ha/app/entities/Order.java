@@ -1,7 +1,7 @@
 package com.ha.app.entities;
 
-import com.ha.app.annotations.data_annotations.Entity;
-import com.ha.app.annotations.data_annotations.Id;
+import com.ha.app.annotations.data.Entity;
+import com.ha.app.annotations.data.Id;
 
 @Entity
 public class Order {

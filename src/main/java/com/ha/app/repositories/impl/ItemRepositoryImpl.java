@@ -1,14 +1,11 @@
 package com.ha.app.repositories.impl;
 
-import com.ha.app.annotations.Autowired;
 import com.ha.app.annotations.Component;
-import com.ha.app.annotations.data_annotations.PersistenceContext;
+import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
-import com.ha.app.data.DbSet;
 import com.ha.app.entities.Item;
 import com.ha.app.repositories.ItemRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component

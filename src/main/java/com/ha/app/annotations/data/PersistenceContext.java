@@ -1,4 +1,4 @@
-package com.ha.app.annotations.data_annotations;
+package com.ha.app.annotations.data;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ManyToMany {
+public @interface PersistenceContext {
 }

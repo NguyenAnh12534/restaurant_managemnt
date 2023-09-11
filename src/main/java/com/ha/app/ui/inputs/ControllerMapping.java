@@ -1,7 +1,8 @@
 package com.ha.app.ui.inputs;
 
-import com.ha.app.utils.depedency_injection.Bean;
-import com.ha.app.utils.depedency_injection.ApplicationContext;
+import com.ha.app.annotations.Controller;
+import com.ha.app.commons.depedencyinjection.Bean;
+import com.ha.app.commons.depedencyinjection.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class ControllerMapping {
     }
 
     private void getControllerBeansFromContext(ApplicationContext applicationContext) {
-        this.controllerBeans = applicationContext.getControllerBeans();
+        this.controllerBeans = applicationContext.getBeansOfType(Controller.class);
     }
 
     public List<Bean> getControllerBeans() {

@@ -1,7 +1,6 @@
-package com.ha.app.utils.depedency_injection;
+package com.ha.app.commons.depedencyinjection;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Bean {

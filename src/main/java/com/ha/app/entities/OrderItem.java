@@ -1,6 +1,6 @@
 package com.ha.app.entities;
 
-import com.ha.app.annotations.data_annotations.Entity;
+import com.ha.app.annotations.data.Entity;
 
 @Entity
 public class OrderItem {

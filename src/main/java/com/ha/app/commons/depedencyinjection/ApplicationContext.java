@@ -1,9 +1,8 @@
-package com.ha.app.utils.depedency_injection;
+package com.ha.app.commons.depedencyinjection;
 
 import com.ha.app.annotations.Autowired;
 import com.ha.app.annotations.Component;
-import com.ha.app.annotations.Controller;
-import com.ha.app.annotations.data_annotations.PersistenceContext;
+import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
 import com.ha.app.data.drivers.impl.CsvDataDriver;
 import com.ha.app.helpers.ClassScanner;
@@ -84,10 +83,6 @@ public class ApplicationContext {
         }
     }
 
-    public void showBeans() {
-        this.beans.forEach(bean -> System.out.println(bean.getName()));
-    }
-
     public <T> T getBeanInstance(Class<T> clazz) {
         for (Bean bean : beans) {
             if (clazz.isAssignableFrom(bean.getType())) {
@@ -97,18 +92,13 @@ public class ApplicationContext {
         return null;
     }
 
-    public Bean getBeanAt(int index) {
-        return this.beans.get(index - 1);
-    }
-
-    public List<Bean> getControllerBeans() {
+    public <T extends Annotation> List<Bean> getBeansOfType(Class<T> tClass) {
         List<Bean> controllerBeans = new ArrayList<>();
         this.beans.forEach(bean -> {
-            if (bean.getType().isAnnotationPresent(Controller.class))
+            if (bean.getType().isAnnotationPresent(tClass))
                 controllerBeans.add(bean);
         });
 
         return controllerBeans;
     }
-
 }

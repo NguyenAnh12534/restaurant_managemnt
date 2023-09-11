@@ -1,11 +1,10 @@
 package com.ha.app.ui.inputs;
 
-import com.ha.app.annotations.data_annotations.Entity;
-import com.ha.app.utils.depedency_injection.Bean;
+import com.ha.app.annotations.data.Entity;
+import com.ha.app.commons.depedencyinjection.Bean;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -105,7 +104,7 @@ public class UserInputHandler {
             if (selectedMethod.getParameters().length == 1) {
                 this.selectedMethod.invoke(this.selectedController.getInstance(), this.values.get(0));
             } else if (selectedMethod.getParameters().length > 1){
-                this.selectedMethod.invoke(this.selectedController.getInstance(), this.values);
+                this.selectedMethod.invoke(this.selectedController.getInstance(), this.values.toArray());
             } else {
                 this.selectedMethod.invoke(this.selectedController.getInstance());
             }

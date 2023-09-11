@@ -1,9 +1,8 @@
 package com.ha.app;
 
-import com.ha.app.data.DbContext;
 import com.ha.app.ui.inputs.ControllerMapping;
 import com.ha.app.ui.inputs.UserInputHandler;
-import com.ha.app.utils.depedency_injection.ApplicationContext;
+import com.ha.app.commons.depedencyinjection.ApplicationContext;
 
 /**
  * This is the entry point of the application
