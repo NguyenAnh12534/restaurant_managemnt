@@ -19,13 +19,14 @@ public class ItemController{
     private ItemConsoleView itemConsoleView;
 
 
-    public void get(int id) {
-        itemService.get(id);
+    public Item get(int id) {
+        return itemService.get(id);
     }
 
-    public void getAll() {
+    public List<Item> getAll() {
         List<Item> items = itemService.getAll();
-        itemConsoleView.viewAll(items);
+
+        return items;
     }
 
     public void create(Item item) {

@@ -1,8 +1,10 @@
 package com.ha.app;
 
+import com.ha.app.annotations.ui.View;
 import com.ha.app.ui.inputs.ControllerMapping;
 import com.ha.app.ui.inputs.UserInputHandler;
 import com.ha.app.commons.depedencyinjection.ApplicationContext;
+import com.ha.app.view.MainScreen;
 
 /**
  * This is the entry point of the application
@@ -13,20 +15,15 @@ public class RestaurantApplication {
     public void start() {
         boolean isTerminated = false;
         ControllerMapping  controllerMapping = new ControllerMapping(this.applicationContext);
-        UserInputHandler userInputHandler = new UserInputHandler(controllerMapping);
 
         while(true){
-            userInputHandler.handleUserInput();
+            MainScreen mainScreen = new MainScreen(this.applicationContext.getBeansOfType(View.class));
+            mainScreen.render();
             isTerminated = true;
         }
     }
 
     public static void main(String[] args)   {
-        String str = "asdas";
-        Object ob = str;
-        System.out.println(ob.getClass().getSimpleName());
-        System.out.println(str.getClass().getSimpleName());
-
         RestaurantApplication restaurantApplication = new RestaurantApplication();
         restaurantApplication.applicationContext = new ApplicationContext(restaurantApplication.getClass().getPackageName());
 

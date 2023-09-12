@@ -21,7 +21,7 @@ public class DbContext {
     }
 
     private void scanForDbSets() {
-        List<Class<?>> classes = ClassScanner.getAllClassesInPackage(DataConstants.MODALS_PACKAGE);
+        List<Class<?>> classes = ClassScanner.getAllClassesInPackage(DataConstants.ENTITIES_PACKAGE);
         classes.forEach(targetClass -> {
             if (targetClass.isAnnotationPresent(Entity.class)) {
                 this.addDbSetOfModal(targetClass);
