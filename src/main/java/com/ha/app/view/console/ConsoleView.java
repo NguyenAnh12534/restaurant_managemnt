@@ -1,15 +1,17 @@
 package com.ha.app.view.console;
 
 import com.ha.app.annotations.ui.ViewFeature;
+import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.view.Renderable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
-    private Scanner scanner = new Scanner(System.in);
+    protected Scanner scanner = new Scanner(System.in);
     private List<Method> features;
     private int selectedIndex = 0;
 
@@ -40,8 +42,13 @@ public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
         selectedFeature.setAccessible(true);
         try {
             selectedFeature.invoke(getCurrentView());
-        }catch (Exception ex) {
-            ex.printStackTrace();
+        }catch (InvocationTargetException ex) {
+
+            if(ex.getTargetException() instanceof ApplicationException) {
+                throw (ApplicationException) ex.getTargetException();
+            }
+        }catch (IllegalAccessException ex) {
+
         }
     }
 

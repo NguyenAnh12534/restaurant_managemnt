@@ -1,10 +1,11 @@
 package com.ha.app;
 
 import com.ha.app.annotations.ui.View;
-import com.ha.app.ui.inputs.ControllerMapping;
-import com.ha.app.ui.inputs.UserInputHandler;
 import com.ha.app.commons.depedencyinjection.ApplicationContext;
+import com.ha.app.exceptions.ExceptionHandler;
 import com.ha.app.view.MainScreen;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+
 
 /**
  * This is the entry point of the application
@@ -13,17 +14,22 @@ public class RestaurantApplication {
     private ApplicationContext applicationContext;
 
     public void start() {
-        boolean isTerminated = false;
-        ControllerMapping  controllerMapping = new ControllerMapping(this.applicationContext);
-
-        while(true){
-            MainScreen mainScreen = new MainScreen(this.applicationContext.getBeansOfType(View.class));
-            mainScreen.render();
-            isTerminated = true;
+        MainScreen mainScreen = new MainScreen(this.applicationContext.getBeansOfType(View.class));
+        ExceptionHandler exceptionHandler = ExceptionHandler.getInstance();
+        while (true) {
+            try {
+                mainScreen.render();
+            } catch (CsvRequiredFieldEmptyException ex) {
+                System.out.println("wtf");
+            } catch (Throwable e) {
+                exceptionHandler.notifyUser(e);
+                exceptionHandler.notifyNonUser(e);
+            }
         }
     }
 
-    public static void main(String[] args)   {
+    public static void main(String[] args) {
+
         RestaurantApplication restaurantApplication = new RestaurantApplication();
         restaurantApplication.applicationContext = new ApplicationContext(restaurantApplication.getClass().getPackageName());
 

@@ -15,8 +15,9 @@ public class ItemServiceImpl implements ItemService {
     private ItemRepository itemRepository;
 
     @Override
-    public void get(int id) {
-        this.itemRepository.get(id);
+    public Item get(int id) {
+
+        return  this.itemRepository.get(id);
     }
 
     @Override

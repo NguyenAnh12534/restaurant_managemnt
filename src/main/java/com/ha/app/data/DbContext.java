@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DbContext {
-
-    private static final DbContext dbContext = null;
     private final DataDriver dataDriver;
     private Map<Class<?>, DbSet> dbSetMap = new HashMap<>();
 

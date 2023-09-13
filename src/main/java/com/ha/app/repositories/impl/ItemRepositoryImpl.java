@@ -4,6 +4,8 @@ import com.ha.app.annotations.Component;
 import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
 import com.ha.app.entities.Item;
+import com.ha.app.exceptions.ApplicationException;
+import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.repositories.ItemRepository;
 
 import java.util.List;
@@ -14,8 +16,19 @@ public class ItemRepositoryImpl implements ItemRepository {
     private DbContext dbContext;
 
     @Override
-    public void get(int id) {
-        System.out.println("getting id: " + id);
+    public Item get(int id) {
+        try {
+            return dbContext.getDbSetOf(Item.class).filterByField("id", id).getOne();
+        } catch (ApplicationException exception) {
+            ErrorInfo errorInfo = new ErrorInfo();
+
+            errorInfo.setContextId(this.getClass().getSimpleName());
+            errorInfo.setErrorId("GetOneItem");
+
+            exception.addErrorInfo(errorInfo);
+
+            throw exception;
+        }
     }
 
     @Override

@@ -4,9 +4,11 @@ import com.ha.app.annotations.Autowired;
 import com.ha.app.annotations.ui.View;
 import com.ha.app.annotations.ui.ViewFeature;
 import com.ha.app.controllers.ItemController;
+import com.ha.app.entities.Item;
 import com.ha.app.view.console.ConsoleView;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 @View
 public class ItemConsoleView extends ConsoleView {
@@ -20,12 +22,19 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void getItemById() {
-        System.out.println("Getting an item by ID");
+        System.out.println("Please enter ID of the desired Item: ");
+        int itemId = scanner.nextInt();
+        Item selectedItem = itemController.get(itemId);
+        System.out.println(selectedItem);
     }
 
     @ViewFeature
     public void getAllItem() {
-        itemController.getAll();
+        List<Item> items = itemController.getAll();
+        System.out.println("All items are displayed as below: ");
+        items.forEach(item -> {
+            System.out.println(item);
+        });
     }
 
     @ViewFeature

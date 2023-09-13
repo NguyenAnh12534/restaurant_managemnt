@@ -29,6 +29,7 @@ public class DbSet<T> {
         this.initElements();
 
         DbSet<T> newDbSet = new DbSet<>(this);
+        newDbSet.isFiltering = true;
         List<T> newElements = new ArrayList<>();
         Class<T> tClass = (Class<T>) elements.get(0).getClass();
         Field targetField = null;
@@ -90,6 +91,6 @@ public class DbSet<T> {
     }
 
     private void initElements() {
-            this.elements = this.dataDriver.getAll(targetClass);
+        this.elements = this.dataDriver.getAll(targetClass);
     }
 }

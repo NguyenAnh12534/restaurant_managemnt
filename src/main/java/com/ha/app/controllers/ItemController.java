@@ -3,8 +3,6 @@ package com.ha.app.controllers;
 import com.ha.app.annotations.Autowired;
 import com.ha.app.annotations.Controller;
 import com.ha.app.entities.Item;
-import com.ha.app.services.impl.ItemServiceImpl;
-import com.ha.app.ui.outputs.ItemConsoleView;
 import com.ha.app.services.ItemService;
 
 import java.util.List;
@@ -14,10 +12,6 @@ public class ItemController{
 
     @Autowired
     private ItemService itemService;
-
-    @Autowired
-    private ItemConsoleView itemConsoleView;
-
 
     public Item get(int id) {
         return itemService.get(id);

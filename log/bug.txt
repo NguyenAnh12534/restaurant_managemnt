@@ -1,0 +1,20 @@
+Full bug id: CsvDataDriver:ReadingDataFromCsv/ItemRepositoryImpl:GetOneItem/
+Error type: INTERNAL
+Severity: CRITICAL
+Stack trace: 
+[
+	{
+		Context ID: CsvDataDriver
+		Error ID: ReadingDataFromCsv
+		Error Type: INTERNAL
+		Severity Type: CRITICAL
+		Error description: Data in CSV file is in wrong format
+		Error correction: Check data in CSV file
+	},
+	{
+		Context ID: ItemRepositoryImpl
+		Error ID: GetOneItem
+		Error description: null
+		Error correction: null
+	},
+]
