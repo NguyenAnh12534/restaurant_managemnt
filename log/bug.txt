@@ -8,13 +8,17 @@ Stack trace:
 		Error ID: ReadingDataFromCsv
 		Error Type: INTERNAL
 		Severity Type: CRITICAL
-		Error description: Data in CSV file is in wrong format
+		Error description: Data in CSV file is in wrong format. Detail message: Error parsing CSV line: 2. [1,new Item1,12.0,1]
 		Error correction: Check data in CSV file
+		Variables at runtime: 
+			filePath: database/Item.csv
+
 	},
 	{
 		Context ID: ItemRepositoryImpl
 		Error ID: GetOneItem
 		Error description: null
 		Error correction: null
+
 	},
 ]

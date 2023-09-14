@@ -2,8 +2,6 @@ package com.ha.app.view;
 
 import com.ha.app.commons.depedencyinjection.Bean;
 import com.ha.app.exceptions.InvalidInputException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -27,7 +25,7 @@ public class MainScreen {
         });
     }
 
-    public void render() throws CsvRequiredFieldEmptyException {
+    public void render() {
         selectCrudView();
         renderSelectView();
     }

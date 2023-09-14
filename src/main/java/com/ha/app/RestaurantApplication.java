@@ -4,7 +4,6 @@ import com.ha.app.annotations.ui.View;
 import com.ha.app.commons.depedencyinjection.ApplicationContext;
 import com.ha.app.exceptions.ExceptionHandler;
 import com.ha.app.view.MainScreen;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 
 
 /**
@@ -19,13 +18,12 @@ public class RestaurantApplication {
         while (true) {
             try {
                 mainScreen.render();
-            } catch (CsvRequiredFieldEmptyException ex) {
-                System.out.println("wtf");
             } catch (Throwable e) {
                 exceptionHandler.notifyUser(e);
                 exceptionHandler.notifyNonUser(e);
             }
         }
+
     }
 
     public static void main(String[] args) {

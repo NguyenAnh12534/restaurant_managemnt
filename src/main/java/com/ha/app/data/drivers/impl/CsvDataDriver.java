@@ -169,7 +169,7 @@ public class CsvDataDriver implements DataDriver {
             errorInfo.setErrorSeverity(ErrorSeverity.CRITICAL);
             errorInfo.setErrorType(ErrorType.INTERNAL);
 
-            errorInfo.setErrorDescription("Data in CSV file is in wrong format");
+            errorInfo.setErrorDescription("Data in CSV file is in wrong format. Detail message: " + ex.getMessage());
             errorInfo.setErrorCorrection("Check data in CSV file");
             errorInfo.getParameters().put("filePath", DataConstants.DATA_FOLDER + "/" + fileName);
 

@@ -110,6 +110,16 @@ public class ErrorInfo {
         errorStrBuilder.append("\t\tError description: " + this.errorDescription);
         errorStrBuilder.append("\n");
         errorStrBuilder.append("\t\tError correction: " + this.errorCorrection);
+        errorStrBuilder.append("\n");
+        if(!this.parameters.isEmpty()) {
+            errorStrBuilder.append("\t\tVariables at runtime: ");
+            errorStrBuilder.append("\n");
+            this.parameters.entrySet().forEach(parameter -> {
+                errorStrBuilder.append("\t\t\t" + parameter.getKey() + ": " + parameter.getValue());
+                errorStrBuilder.append("\n");
+
+            });
+        }
 
         return errorStrBuilder.toString();
     }
