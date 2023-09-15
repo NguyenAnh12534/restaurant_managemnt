@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This is the central container for all beans in application
+ * Each bean is either annotated with @Component or annotations that are annotated with @Component
+ */
 public class ApplicationContext {
     private List<Bean> beans;
 
