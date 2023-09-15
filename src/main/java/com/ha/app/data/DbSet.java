@@ -102,10 +102,12 @@ public class DbSet<T> {
     }
 
     public void flush() {
-        this.dataDriver.saveAllObjects(this.elements);
+        if(this.elements.size() > 0)
+            this.dataDriver.saveAllObjects(this.elements);
     }
 
     private void deleteByField(String fieldName, Object fieldValue) {
+        this.initElements();
         Field[] allFields = targetClass.getDeclaredFields();
         Field selectedField = null;
         for (Field field: allFields) {
@@ -137,8 +139,6 @@ public class DbSet<T> {
             }
         }
     }
-
-
 
     private void initElements() {
         this.elements = this.dataDriver.getAll(targetClass);

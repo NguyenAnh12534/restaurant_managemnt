@@ -3,6 +3,7 @@ package com.ha.app.repositories.impl;
 import com.ha.app.annotations.Component;
 import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
+import com.ha.app.data.drivers.DataDriver;
 import com.ha.app.entities.Item;
 import com.ha.app.entities.Menu;
 import com.ha.app.enums.errors.ErrorSeverity;
@@ -11,6 +12,7 @@ import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.repositories.ItemRepository;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 
 @Component
@@ -22,8 +24,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Item get(int id) {
         try {
             Item item = dbContext.getDbSetOf(Item.class).findById(id);
-            Menu menu = dbContext.getDbSetOf(Menu.class).findById(id);
-            item.setMenu(menu);
+            if(item != null) {
+                Menu menu = dbContext.getDbSetOf(Menu.class).findById(id);
+                item.setMenu(menu);
+            }
             return item;
         } catch (ApplicationException exception) {
             ErrorInfo errorInfo = new ErrorInfo();
@@ -54,7 +58,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         oldItem.setName(newItem.getName());
         oldItem.setPrice(newItem.getPrice());
 
-        this.dbContext.flush();
+        this.dbContext.getDbSetOf(Item.class).flush();
     }
 
     @Override
@@ -66,5 +70,13 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public boolean isExisted(int itemId) {
         return dbContext.getDbSetOf(Item.class).findById(itemId) != null;
+    }
+
+    public ItemRepositoryImpl() {
+
+    }
+
+    public  ItemRepositoryImpl(DbContext dbContext) {
+        this.dbContext = dbContext;
     }
 }
