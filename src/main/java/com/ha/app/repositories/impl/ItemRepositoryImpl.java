@@ -4,6 +4,9 @@ import com.ha.app.annotations.Component;
 import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
 import com.ha.app.entities.Item;
+import com.ha.app.entities.Menu;
+import com.ha.app.enums.errors.ErrorSeverity;
+import com.ha.app.enums.errors.ErrorType;
 import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.repositories.ItemRepository;
@@ -18,7 +21,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item get(int id) {
         try {
-            return dbContext.getDbSetOf(Item.class).filterByField("id", id).getOne();
+            Item item = dbContext.getDbSetOf(Item.class).findById(id);
+            Menu menu = dbContext.getDbSetOf(Menu.class).findById(id);
+            item.setMenu(menu);
+            return item;
         } catch (ApplicationException exception) {
             ErrorInfo errorInfo = new ErrorInfo();
 
@@ -43,12 +49,22 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public void update(Item oldItem, Item newItem) {
+    public void update(int oldItemId, Item newItem) {
+        Item oldItem = this.dbContext.getDbSetOf(Item.class).findById(oldItemId);
+        oldItem.setName(newItem.getName());
+        oldItem.setPrice(newItem.getPrice());
 
+        this.dbContext.flush();
     }
 
     @Override
     public void delete(int id) {
+        this.dbContext.getDbSetOf(Item.class).deleteById(id);
+        this.dbContext.flush();
+    }
 
+    @Override
+    public boolean isExisted(int itemId) {
+        return dbContext.getDbSetOf(Item.class).findById(itemId) != null;
     }
 }

@@ -24,6 +24,7 @@ public class ExceptionHandler {
             if(applicationException.getErrorType().equals(ErrorType.CLIENT)) {
                 // The error is actually caused by the end users malfunction
                 // show the cause and also how to correct it
+                System.out.println(applicationException.getErrorInfos().peek().getUserErrorDescription());
             } else {
                 // The error is not caused by the user
                 // Therefore only show standard error message.
@@ -49,8 +50,6 @@ public class ExceptionHandler {
                     // It is just the user who is malfunctioning
                 }
                 case INTERNAL -> {
-                    // The error shows a high chance of bug in the system.
-                    // Log the error
                     File logFile = FileHelper.readFile("log", "bug.txt");
 
                     try {
@@ -79,8 +78,7 @@ public class ExceptionHandler {
             }
 
         } else {
-            // It is an unknown exception. It is also serious problem since the cause of this error is unknow.
-            // This should be fixed and covered in the ApplicationException
+            // It is an unknown exception. It is also serious problem since the cause of this error is unknown.
         }
     }
 

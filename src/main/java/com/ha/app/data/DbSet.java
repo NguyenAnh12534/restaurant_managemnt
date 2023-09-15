@@ -1,11 +1,15 @@
 package com.ha.app.data;
 
+import com.ha.app.annotations.data.ManyToOne;
+import com.ha.app.annotations.data.OneToMany;
 import com.ha.app.data.drivers.DataDriver;
 import com.ha.app.entities.Item;
+import com.ha.app.exceptions.InvalidInputException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class DbSet<T> {
@@ -89,8 +93,62 @@ public class DbSet<T> {
         this.dataDriver.appendAllObjects(items);
         return true;
     }
+    public T findById(int id) {
+        return this.filterByField("id", id).getOne();
+    }
+
+    public void deleteById(int id) {
+        this.deleteByField("id", id);
+    }
+
+    public void flush() {
+        this.dataDriver.saveAllObjects(this.elements);
+    }
+
+    private void deleteByField(String fieldName, Object fieldValue) {
+        Field[] allFields = targetClass.getDeclaredFields();
+        Field selectedField = null;
+        for (Field field: allFields) {
+            if(field.getName().equals(fieldName)) {
+                selectedField = field;
+                break;
+            }
+        }
+
+        if(selectedField == null) {
+            throw new IllegalArgumentException();
+        }
+
+        selectedField.setAccessible(true);
+
+        selectedField.setAccessible(true);
+        if(this.elements.size() > 0) {
+            Iterator<T> iterator =  this.elements.iterator();
+            while (iterator.hasNext()) {
+                T element = iterator.next();
+                try {
+                    Object value = selectedField.get(element);
+                    if (value != null && value.equals(fieldValue)) {
+                        iterator.remove();
+                    }
+                } catch (IllegalAccessException exception) {
+                    System.out.println("Can not access field");
+                }
+            }
+        }
+    }
+
+
 
     private void initElements() {
         this.elements = this.dataDriver.getAll(targetClass);
+        Field[] fields = targetClass.getDeclaredFields();
+        for(Field field : fields) {
+            if(field.isAnnotationPresent(OneToMany.class)) {
+                System.out.println(field.getType().getSimpleName());
+            } else if(field.isAnnotationPresent(ManyToOne.class)) {
+                System.out.println(field.getType().getSimpleName());
+            }
+        }
     }
 }

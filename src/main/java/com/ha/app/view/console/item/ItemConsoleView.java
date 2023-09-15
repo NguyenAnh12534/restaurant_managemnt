@@ -5,9 +5,11 @@ import com.ha.app.annotations.ui.View;
 import com.ha.app.annotations.ui.ViewFeature;
 import com.ha.app.controllers.ItemController;
 import com.ha.app.entities.Item;
+import com.ha.app.exceptions.ApplicationException;
+import com.ha.app.exceptions.ExitExcpetion;
+import com.ha.app.helpers.InputHelper;
 import com.ha.app.view.console.ConsoleView;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 @View
@@ -16,14 +18,18 @@ public class ItemConsoleView extends ConsoleView {
     @Autowired
     ItemController itemController;
 
+    private InputHelper inputHelper = InputHelper.getInstance();
+
     public ItemConsoleView() {
         super(ItemConsoleView.class);
     }
 
     @ViewFeature
     public void getItemById() {
-        System.out.println("Please enter ID of the desired Item: ");
-        int itemId = scanner.nextInt();
+        System.out.println("Please enter ID of the desired Item");
+        int itemId;
+        itemId = inputHelper.getInteger();
+
         Item selectedItem = itemController.get(itemId);
         System.out.println(selectedItem);
     }

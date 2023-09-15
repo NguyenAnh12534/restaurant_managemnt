@@ -1,12 +1,15 @@
 package com.ha.app.entities;
 
 import com.ha.app.annotations.data.Entity;
+import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.OneToMany;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Menu {
+    @Id
     private int id;
     private String name;
 
@@ -31,7 +34,7 @@ public class Menu {
 
     public List<Item> getItems() {
         if (items == null) {
-
+            this.items = new ArrayList<>();
         }
         return items;
     }

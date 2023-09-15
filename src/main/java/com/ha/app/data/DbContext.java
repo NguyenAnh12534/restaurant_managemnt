@@ -17,6 +17,19 @@ public class DbContext {
         this.dataDriver = dataDriver;
         scanForDbSets();
     }
+    public <T> DbSet<T> getDbSetOf(Class<T> tClass) {
+        return this.dbSetMap.get(tClass);
+    }
+
+    public Map<Class<?>, DbSet> getDbSetMap() {
+        return this.dbSetMap;
+    }
+
+    public void flush() {
+        dbSetMap.forEach((aClass, dbSet) -> {
+            dbSet.flush();
+        });
+    }
 
     private void scanForDbSets() {
         List<Class<?>> classes = ClassScanner.getAllClassesInPackage(DataConstants.ENTITIES_PACKAGE);
@@ -27,16 +40,13 @@ public class DbContext {
         });
     }
 
-    public <T> DbSet<T> getDbSetOf(Class<T> tClass) {
-        return this.dbSetMap.get(tClass);
-    }
+
 
     private <T> void addDbSetOfModal(Class<T> tClass) {
 
         this.dbSetMap.put(tClass, new DbSet(tClass, dataDriver));
     }
 
-    public Map<Class<?>, DbSet> getDbSetMap() {
-        return this.dbSetMap;
-    }
+
+
 }

@@ -1,5 +1,7 @@
 package com.ha.app.annotations.data;
 
+import com.opencsv.bean.CsvIgnore;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

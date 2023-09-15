@@ -8,6 +8,7 @@ public interface ItemRepository extends Repository<Item>{
     public Item get(int id);
     public List<Item> getAll();
     public void create(Item item);
-    public void update(Item oldItem, Item newItem);
+    public void update(int oldItemId, Item newItem);
     public void delete(int id);
+    public boolean isExisted(int itemId);
 }

@@ -1,12 +1,24 @@
 package com.ha.app.entities;
 
 import com.ha.app.annotations.data.Entity;
+import com.ha.app.annotations.data.Id;
+import com.ha.app.annotations.data.ManyToOne;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
 
 @Entity
 public class Item{
+    @Id
     private Integer id;
     private String name;
     private Double price;
+
+    @ManyToOne
+    private Menu menu;
+
+    public int menu_id;
 
     public Item(Integer id, String name, Double price) {
         this.id = id;
@@ -40,6 +52,23 @@ public class Item{
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    public void setMenu(Menu menu) {
+        this.menu = menu;
+        this.menu_id = menu.getId();
     }
 
     @Override

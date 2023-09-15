@@ -3,6 +3,7 @@ package com.ha.app;
 import com.ha.app.annotations.ui.View;
 import com.ha.app.commons.depedencyinjection.ApplicationContext;
 import com.ha.app.exceptions.ExceptionHandler;
+import com.ha.app.exceptions.ExitExcpetion;
 import com.ha.app.view.MainScreen;
 
 
@@ -18,7 +19,10 @@ public class RestaurantApplication {
         while (true) {
             try {
                 mainScreen.render();
-            } catch (Throwable e) {
+            } catch (ExitExcpetion exitExcpetion) {
+                System.out.println("Stop operation");
+            }
+            catch (Throwable e) {
                 exceptionHandler.notifyUser(e);
                 exceptionHandler.notifyNonUser(e);
             }

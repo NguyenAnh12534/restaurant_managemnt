@@ -1,5 +1,8 @@
 package com.ha.app.data.drivers.impl;
 
+import com.ha.app.annotations.data.Id;
+import com.ha.app.annotations.data.ManyToOne;
+import com.ha.app.annotations.data.OneToMany;
 import com.ha.app.constants.DataConstants;
 import com.ha.app.data.drivers.DataDriver;
 import com.ha.app.enums.errors.ErrorSeverity;
@@ -24,12 +27,27 @@ import java.util.List;
 
 public class CsvDataDriver implements DataDriver {
 
+    private void writeHeader(Field field, Writer writer, int index) throws IOException {
+        String fieldName;
+
+        if (field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class)) {
+            return;
+        }
+
+        fieldName = field.getName();
+
+        if (index > 0)
+            writer.write(",");
+
+        writer.write("\"" + fieldName + "\"");
+    }
+
     private <T> void writeOne(T object, boolean isAppending) {
         try {
             String fileName = object.getClass().getSimpleName() + ".csv";
             File csvFile = FileHelper.readFile(DataConstants.DATA_FOLDER, fileName);
             Writer writer;
-            if(isAppending) {
+            if (isAppending) {
                 writer = new FileWriter(csvFile, true);
             } else {
                 writer = new FileWriter(csvFile);
@@ -40,12 +58,9 @@ public class CsvDataDriver implements DataDriver {
             // Write header
             if (!isAppending) {
                 for (int i = 0; i < fields.length; i++) {
-                    if (i == fields.length - 1) {
-                        writer.write("\"" + fields[i].getName() + "\"" + "\n");
-                    } else {
-                        writer.write("\"" + fields[i].getName() + "\"" + ",");
-                    }
+                    this.writeHeader(fields[i], writer, i);
                 }
+                writer.write("\n");
             }
 
             // Write body
@@ -67,12 +82,9 @@ public class CsvDataDriver implements DataDriver {
                 // Write header
                 if (!isAppending) {
                     for (int i = 0; i < fields.length; i++) {
-                        if (i == fields.length - 1) {
-                            writer.write("\"" + fields[i].getName() + "\"" + "\n");
-                        } else {
-                            writer.write("\"" + fields[i].getName() + "\"" + ",");
-                        }
+                        this.writeHeader(fields[i], writer, i);
                     }
+                    writer.write("\n");
                 }
 
                 // Write body
@@ -80,7 +92,7 @@ public class CsvDataDriver implements DataDriver {
                     writeBody(writer, fields, object);
                 }
             } catch (IOException | IllegalAccessException ex) {
-                throw  ex;
+                throw ex;
 
             }
         } catch (ApplicationException exception) {
@@ -106,7 +118,7 @@ public class CsvDataDriver implements DataDriver {
             errorInfo.setErrorType(ErrorType.INTERNAL);
 
             errorInfo.setErrorDescription("Fail to write a file due to " + ex.getMessage());
-            throw  applicationException;
+            throw applicationException;
         }
     }
 
@@ -114,18 +126,46 @@ public class CsvDataDriver implements DataDriver {
         for (int i = 0; i < fields.length; i++) {
             Field f = fields[i];
             f.setAccessible(true);
+
+            if (f.isAnnotationPresent(OneToMany.class) || f.isAnnotationPresent(ManyToOne.class)) {
+                continue;
+            }
+
             String value;
-            if (f.getType().equals(String.class)) {
-                value = "\"" + f.get(object) + "\"";
+//            if (f.isAnnotationPresent(ManyToOne.class)) {
+//                Object parentObject = f.get(object);
+//                if(parentObject != null) {
+//                    Field primaryField = f;
+//                    Field[] parentFields = parentObject.getClass().getDeclaredFields();
+//                    for (Field parentField : parentFields) {
+//                        if (parentField.isAnnotationPresent(Id.class)) {
+//                            primaryField = parentField;
+//                            return;
+//                        } else if (parentField.getName().equals("id")) {
+//                            primaryField = parentField;
+//                        }
+//                    }
+//                    f = primaryField;
+//                    object = parentObject;
+//                }
+//            }
+
+            if (f.get(object) != null) {
+                if (f.getType().equals(String.class)) {
+                    value = "\"" + f.get(object) + "\"";
+                } else {
+                    value = f.get(object).toString();
+                }
             } else {
-                value = f.get(object).toString();
+                value = "";
             }
-            if (i == fields.length - 1) {
-                writer.write(value + "\n");
-            } else {
-                writer.write(value + ",");
+
+            if (i > 0) {
+                writer.write(",");
             }
+            writer.write(value);
         }
+        writer.write("\n");
     }
 
     @Override
@@ -140,7 +180,7 @@ public class CsvDataDriver implements DataDriver {
 
     @Override
     public <T> void appendObject(T object) {
-        writeOne(object,true);
+        writeOne(object, true);
     }
 
     @Override

@@ -2,6 +2,9 @@ package com.ha.app.view.console;
 
 import com.ha.app.annotations.ui.ViewFeature;
 import com.ha.app.exceptions.ApplicationException;
+import com.ha.app.exceptions.ExitExcpetion;
+import com.ha.app.exceptions.InvalidInputException;
+import com.ha.app.helpers.InputHelper;
 import com.ha.app.view.Renderable;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +14,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
-    protected Scanner scanner = new Scanner(System.in);
+    private InputHelper inputHelper = InputHelper.getInstance();
     private List<Method> features;
     private int selectedIndex = 0;
 
@@ -24,30 +27,34 @@ public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
     public void render() {
         selectFeature();
         executeFeature();
+
     }
 
     private void selectFeature() {
         System.out.println("Select one feature from the list below: ");
-        for(int i = 0; i < this.features.size(); i++) {
-            System.out.println( i+1 + ". " + this.features.get(i).getName());
+        for (int i = 0; i < this.features.size(); i++) {
+            System.out.println(i + 1 + ". " + this.features.get(i).getName());
         }
-        System.out.print("Enter the index of the desired feature: ");
-        int i = scanner.nextInt();
+        int i;
+        i = inputHelper.getInteger();
+        if(i > this.features.size())
+            throw new InvalidInputException("Number enter is too large");
         this.selectedIndex = i - 1;
     }
 
 
     protected void executeFeature() {
         Method selectedFeature = this.features.get(selectedIndex);
+        System.out.println("\nSelected feature: " + selectedFeature.getName());
         selectedFeature.setAccessible(true);
         try {
             selectedFeature.invoke(getCurrentView());
-        }catch (InvocationTargetException ex) {
+        } catch (InvocationTargetException ex) {
 
-            if(ex.getTargetException() instanceof ApplicationException) {
+            if (ex.getTargetException() instanceof ApplicationException) {
                 throw (ApplicationException) ex.getTargetException();
             }
-        }catch (IllegalAccessException ex) {
+        } catch (IllegalAccessException ex) {
 
         }
     }

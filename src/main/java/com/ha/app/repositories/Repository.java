@@ -6,6 +6,6 @@ public interface Repository<T> {
     public T get(int id);
     public List<T> getAll();
     public void create(T item);
-    public void update(T oldItem, T newItem);
+    public void update(int oldItemId, T newItem);
     public void delete(int id);
 }
