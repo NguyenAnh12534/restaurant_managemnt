@@ -6,6 +6,7 @@ import com.ha.app.entities.Item;
 import com.ha.app.services.ItemService;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class ItemController{
@@ -17,8 +18,8 @@ public class ItemController{
         return itemService.get(id);
     }
 
-    public List<Item> getAll() {
-        List<Item> items = itemService.getAll();
+    public Set<Item> getAll() {
+        Set<Item> items = itemService.getAll();
 
         return items;
     }
@@ -27,12 +28,11 @@ public class ItemController{
         itemService.create(item);
     }
 
-    public void update(Item oldItem, Item newItem) {
-        System.out.println("Old item: " + oldItem);
-        System.out.println("New item: " + newItem);
+    public void update(Item newItem, int oldItemId) {
+        this.itemService.update(newItem, oldItemId);;
     }
 
     public void delete(int id) {
-
+        this.itemService.delete(id);
     }
 }

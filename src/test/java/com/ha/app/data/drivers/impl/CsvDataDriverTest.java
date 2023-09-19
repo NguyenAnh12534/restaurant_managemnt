@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CsvDataDriverTest {
 
@@ -23,7 +25,7 @@ public class CsvDataDriverTest {
         Item item1 = new Item(1,"new Item1", 12.0);
         Item item2 = new Item(1,"new Item2", 12.0);
         Item item3 = new Item(1,"new Item3", 12.0);
-        List<Item> items = new ArrayList<>(Arrays.asList(item1, item2, item3));
+        Set<Item> items = new HashSet<>(Arrays.asList(item1, item2, item3));
         CsvDataDriver csvDataDriver = new CsvDataDriver();
         csvDataDriver.saveAllObjects(items);
     }
@@ -40,7 +42,7 @@ public class CsvDataDriverTest {
         Item item1 = new Item(1,"new Item1", 12.0);
         Item item2 = new Item(1,"new Item2", 12.0);
         Item item3 = new Item(1,"new Item3", 12.0);
-        List<Item> items = new ArrayList<>(Arrays.asList(item1, item2, item3));
+        Set<Item> items = new HashSet<>(Arrays.asList(item1, item2, item3));
         CsvDataDriver csvDataDriver = new CsvDataDriver();
         csvDataDriver.appendAllObjects(items);
     }
@@ -48,7 +50,7 @@ public class CsvDataDriverTest {
     @Test
     public void testReadAllObjects() {
         CsvDataDriver csvDataDriver = new CsvDataDriver();
-        List<Item> items = csvDataDriver.getAll(Item.class);
+        Set<Item> items = csvDataDriver.getAll(Item.class);
         items.forEach(item -> {
             System.out.println(item.menu_id);
         });
@@ -82,7 +84,7 @@ public class CsvDataDriverTest {
         Item item2 = new Item(2, "test item 2", 24.0);
         item1.setMenu(menu);
 
-        List<Item> items = new ArrayList<>(Arrays.asList(item1, item2));
+        Set<Item> items = new HashSet<>(Arrays.asList(item1, item2));
         DataDriver dataDriver = new CsvDataDriver();
         dataDriver.saveAllObjects(items);
     }

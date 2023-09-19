@@ -1,23 +1,31 @@
 package com.ha.app.helpers;
 
-import com.ha.app.helpers.RuntimeHelper;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
-public class ClassScanner {
+public class ClassHelper {
 
     public static List<Class<?>> getAllClassesInPackage(String packageName){
         List<Class<?>> classes = RuntimeHelper.isRunningFromJar() ? scanComponentsInJar(packageName) : scanComponents(packageName);
 
         return classes;
+    }
+
+    public static Field getFieldByName(Class targetClass, String fieldName) {
+        Field[] allFields = targetClass.getDeclaredFields();
+        Field selectedField = null;
+        for (Field field: allFields) {
+            if(field.getName().equals(fieldName)) {
+                selectedField = field;
+                break;
+            }
+        }
+
+        return selectedField;
     }
 
     public static List<Class<?>> scanComponentsInJar(String packageName) {

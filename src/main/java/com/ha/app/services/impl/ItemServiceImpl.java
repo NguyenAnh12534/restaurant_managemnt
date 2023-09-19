@@ -7,6 +7,7 @@ import com.ha.app.repositories.ItemRepository;
 import com.ha.app.services.ItemService;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ItemServiceImpl implements ItemService {
@@ -21,7 +22,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getAll() {
+    public Set<Item> getAll() {
         return itemRepository.getAll();
     }
 
@@ -31,12 +32,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void update(Item oldItem, Item newItem) {
-
+    public void update(Item newItem, int oldItemId) {
+        if(this.itemRepository.isExisted(oldItemId))
+            this.itemRepository.update(newItem, oldItemId);
     }
 
     @Override
     public void delete(int id) {
-
+        if(this.itemRepository.isExisted(id))
+            this.itemRepository.delete(id);
     }
 }

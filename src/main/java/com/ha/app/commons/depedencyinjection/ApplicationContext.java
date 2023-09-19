@@ -5,7 +5,7 @@ import com.ha.app.annotations.Component;
 import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
 import com.ha.app.data.drivers.impl.CsvDataDriver;
-import com.ha.app.helpers.ClassScanner;
+import com.ha.app.helpers.ClassHelper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -34,7 +34,7 @@ public class ApplicationContext {
 
 
     public List<Bean> scanForBeans(String packageName) throws Exception {
-        List<Class<?>> classes = ClassScanner.getAllClassesInPackage(packageName);
+        List<Class<?>> classes = ClassHelper.getAllClassesInPackage(packageName);
         List<Bean> beans = new ArrayList<>();
         for (Class<?> targetClass : classes) {
             if (checkForAnnotationOnClass(targetClass, Component.class) && !targetClass.isAnnotation()) {

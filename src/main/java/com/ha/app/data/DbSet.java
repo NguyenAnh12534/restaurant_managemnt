@@ -4,28 +4,30 @@ import com.ha.app.annotations.data.ManyToOne;
 import com.ha.app.annotations.data.OneToMany;
 import com.ha.app.data.drivers.DataDriver;
 import com.ha.app.entities.Item;
-import com.ha.app.exceptions.InvalidInputException;
+import com.ha.app.helpers.ClassHelper;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 public class DbSet<T> {
-    private List<T> elements = new ArrayList<>();
+    private Set<T> elements = new HashSet<>();
     private Class<T> targetClass;
     private DataDriver dataDriver;
+    private DbContext dbContext;
     private boolean isFiltering = false;
 
-    public DbSet(Class<T> tClass, DataDriver dataDriver) {
+    public DbSet(Class<T> tClass, DataDriver dataDriver, DbContext dbContext) {
         this.dataDriver = dataDriver;
         this.targetClass = tClass;
+        this.dbContext = dbContext;
     }
 
     private DbSet(DbSet dbSet) {
         this.dataDriver = dbSet.dataDriver;
-        this.elements = new ArrayList<>(dbSet.elements);
+        this.elements = new HashSet<>(dbSet.elements);
+        this.dbContext = dbSet.dbContext;
     }
 
     public DbSet<T> filterByField(String fieldName, Object value) {
@@ -34,26 +36,19 @@ public class DbSet<T> {
 
         DbSet<T> newDbSet = new DbSet<>(this);
         newDbSet.isFiltering = true;
-        List<T> newElements = new ArrayList<>();
-        Class<T> tClass = (Class<T>) elements.get(0).getClass();
-        Field targetField = null;
-        Field[] allFields = tClass.getDeclaredFields();
-        for (int i = 0; i < allFields.length; i++) {
-            if (allFields[i].getName().equals(fieldName)) {
-                targetField = allFields[i];
-            }
-        }
+        Set<T> newElements = new HashSet<>();
+
+        Field targetField = ClassHelper.getFieldByName(this.targetClass, fieldName);
 
         if (targetField == null) {
             return newDbSet;
         }
 
         if (value.getClass().isAssignableFrom(targetField.getType())) {
-            Field finalTargetField = targetField;
-            finalTargetField.setAccessible(true);
+            targetField.setAccessible(true);
             newDbSet.elements.forEach(element -> {
                 try {
-                    if (finalTargetField.get(element).equals(value)) {
+                    if (targetField.get(element).equals(value)) {
                         newElements.add(element);
                     }
                 } catch (IllegalAccessException e) {
@@ -66,7 +61,7 @@ public class DbSet<T> {
         return newDbSet;
     }
 
-    public List<T> getAll() {
+    public Set<T> getAll() {
         if (!isFiltering) {
             initElements();
         }
@@ -81,18 +76,22 @@ public class DbSet<T> {
         if (elements.isEmpty())
             return null;
 
-        return elements.get(0);
+        return (T) elements.toArray()[0];
     }
 
     public boolean create(Item item) {
-        this.dataDriver.appendObject(item);
+        if(this.elements.size() > 0) {
+            this.dataDriver.appendObject(item);
+        }else
+            this.dataDriver.saveObject(item);
         return true;
     }
 
-    public boolean create(List<Item> items){
+    public boolean create(Set<Item> items) {
         this.dataDriver.appendAllObjects(items);
         return true;
     }
+
     public T findById(int id) {
         return this.filterByField("id", id).getOne();
     }
@@ -102,30 +101,25 @@ public class DbSet<T> {
     }
 
     public void flush() {
-        if(this.elements.size() > 0)
+        if (this.elements.size() > 0)
             this.dataDriver.saveAllObjects(this.elements);
+        else
+            this.dataDriver.clearData(this.targetClass);
     }
 
     private void deleteByField(String fieldName, Object fieldValue) {
         this.initElements();
-        Field[] allFields = targetClass.getDeclaredFields();
-        Field selectedField = null;
-        for (Field field: allFields) {
-            if(field.getName().equals(fieldName)) {
-                selectedField = field;
-                break;
-            }
-        }
 
-        if(selectedField == null) {
+        Field selectedField = ClassHelper.getFieldByName(targetClass, fieldName);
+
+        if (selectedField == null) {
             throw new IllegalArgumentException();
         }
 
         selectedField.setAccessible(true);
 
-        selectedField.setAccessible(true);
-        if(this.elements.size() > 0) {
-            Iterator<T> iterator =  this.elements.iterator();
+        if (this.elements.size() > 0) {
+            Iterator<T> iterator = this.elements.iterator();
             while (iterator.hasNext()) {
                 T element = iterator.next();
                 try {
@@ -143,11 +137,11 @@ public class DbSet<T> {
     private void initElements() {
         this.elements = this.dataDriver.getAll(targetClass);
         Field[] fields = targetClass.getDeclaredFields();
-        for(Field field : fields) {
-            if(field.isAnnotationPresent(OneToMany.class)) {
-                System.out.println(field.getType().getSimpleName());
-            } else if(field.isAnnotationPresent(ManyToOne.class)) {
-                System.out.println(field.getType().getSimpleName());
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(OneToMany.class)) {
+                //handle One To Many
+            } else if (field.isAnnotationPresent(ManyToOne.class)) {
+                //handle Many To One
             }
         }
     }

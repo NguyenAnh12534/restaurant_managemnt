@@ -3,15 +3,16 @@ package com.ha.app.helpers;
 import com.ha.app.constants.InputConstants;
 import com.ha.app.exceptions.ExitExcpetion;
 
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class InputHelper {
+    StringBuilder stringBuilder = new StringBuilder();
     Scanner scanner = new Scanner(System.in);
     private static InputHelper inputHelper;
 
     public static InputHelper getInstance() {
         if (inputHelper == null) {
+
             inputHelper = new InputHelper();
         }
 
@@ -50,10 +51,19 @@ public class InputHelper {
         }while(true);
     }
 
+    public String getLine() {
+        String value = this.scanner.nextLine();
+        if(InputConstants.EXIT_COMMAND.equals(value)) {
+            throw new ExitExcpetion();
+        }
+
+        return value;
+    }
 
 
     private String getInput() {
         String value = this.scanner.next();
+        this.scanner.nextLine();
         if(InputConstants.EXIT_COMMAND.equals(value)) {
             throw new ExitExcpetion();
         }

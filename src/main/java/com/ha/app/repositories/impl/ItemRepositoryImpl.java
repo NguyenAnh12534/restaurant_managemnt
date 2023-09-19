@@ -14,6 +14,7 @@ import com.ha.app.repositories.ItemRepository;
 
 import javax.xml.crypto.Data;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ItemRepositoryImpl implements ItemRepository {
@@ -24,9 +25,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Item get(int id) {
         try {
             Item item = dbContext.getDbSetOf(Item.class).findById(id);
-            if(item != null) {
+            if (item != null) {
                 Menu menu = dbContext.getDbSetOf(Menu.class).findById(id);
-                item.setMenu(menu);
+                if (menu != null)
+                    item.setMenu(menu);
             }
             return item;
         } catch (ApplicationException exception) {
@@ -42,8 +44,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<Item> getAll() {
-        List<Item> items = dbContext.getDbSetOf(Item.class).getAll();
+    public Set<Item> getAll() {
+        Set<Item> items = dbContext.getDbSetOf(Item.class).getAll();
         return items;
     }
 
@@ -53,7 +55,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public void update(int oldItemId, Item newItem) {
+    public void update(Item newItem, int oldItemId) {
         Item oldItem = this.dbContext.getDbSetOf(Item.class).findById(oldItemId);
         oldItem.setName(newItem.getName());
         oldItem.setPrice(newItem.getPrice());
@@ -76,7 +78,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     }
 
-    public  ItemRepositoryImpl(DbContext dbContext) {
+    public ItemRepositoryImpl(DbContext dbContext) {
         this.dbContext = dbContext;
     }
 }

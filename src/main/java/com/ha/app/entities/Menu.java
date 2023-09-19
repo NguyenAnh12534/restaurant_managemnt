@@ -13,7 +13,7 @@ public class Menu {
     private int id;
     private String name;
 
-    @OneToMany
+    @OneToMany(mappedBy = "menu")
     private List<Item> items;
 
     public int getId() {
@@ -41,5 +41,10 @@ public class Menu {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    @Override
+    public String toString() {
+        return "Menu: " + name ;
     }
 }

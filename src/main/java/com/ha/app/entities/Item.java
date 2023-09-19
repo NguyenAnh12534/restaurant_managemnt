@@ -7,6 +7,10 @@ import com.ha.app.annotations.data.ManyToOne;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 
 @Entity
 public class Item{
@@ -73,6 +77,31 @@ public class Item{
 
     @Override
     public String toString() {
-        return "ID: " + this.id + ", Name: " + this.name + ", Price: " + this.price;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("ID: ");
+        stringBuilder.append(this.id);
+        stringBuilder.append(", Name: ");
+        stringBuilder.append(this.name);
+        stringBuilder.append(", Price: ");
+        stringBuilder.append(this.price);
+        if(this.menu_id != 0) {
+            stringBuilder.append(", ");
+            stringBuilder.append(this.menu);
+        }
+
+        return stringBuilder.toString() ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return id.equals(item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

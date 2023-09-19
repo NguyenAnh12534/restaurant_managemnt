@@ -18,12 +18,15 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CsvDataDriver implements DataDriver {
 
@@ -71,13 +74,13 @@ public class CsvDataDriver implements DataDriver {
         }
     }
 
-    private <T> void writeAll(List<T> objects, boolean isAppending) {
+    private <T> void writeAll(Set<T> objects, boolean isAppending) {
         try {
-            String fileName = objects.get(0).getClass().getSimpleName() + ".csv";
+           Class targetClass = objects.toArray()[0].getClass();
+            String fileName = targetClass.getSimpleName() + ".csv";
             File csvFile = FileHelper.readFile(DataConstants.DATA_FOLDER, fileName);
             try (Writer writer = new FileWriter(csvFile, isAppending)) {
-                Object obj = objects.get(0);
-                Field[] fields = obj.getClass().getDeclaredFields();
+                Field[] fields = targetClass.getDeclaredFields();
 
                 // Write header
                 if (!isAppending) {
@@ -132,23 +135,6 @@ public class CsvDataDriver implements DataDriver {
             }
 
             String value;
-//            if (f.isAnnotationPresent(ManyToOne.class)) {
-//                Object parentObject = f.get(object);
-//                if(parentObject != null) {
-//                    Field primaryField = f;
-//                    Field[] parentFields = parentObject.getClass().getDeclaredFields();
-//                    for (Field parentField : parentFields) {
-//                        if (parentField.isAnnotationPresent(Id.class)) {
-//                            primaryField = parentField;
-//                            return;
-//                        } else if (parentField.getName().equals("id")) {
-//                            primaryField = parentField;
-//                        }
-//                    }
-//                    f = primaryField;
-//                    object = parentObject;
-//                }
-//            }
 
             if (f.get(object) != null) {
                 if (f.getType().equals(String.class)) {
@@ -169,12 +155,24 @@ public class CsvDataDriver implements DataDriver {
     }
 
     @Override
+    public <T> void clearData(Class<T> targetClass) {
+        String fileName = targetClass.getSimpleName() + ".csv";
+        File csvFile = FileHelper.readFile(DataConstants.DATA_FOLDER, fileName);
+        try {
+            FileOutputStream fos = new FileOutputStream(csvFile);
+            fos.getChannel().truncate(0);
+        } catch (IOException ex) {
+            System.out.println("can't truncate data");
+        }
+    }
+
+    @Override
     public <T> void saveObject(T object) {
         writeOne(object, false);
     }
 
     @Override
-    public <T> void saveAllObjects(List<T> objects) {
+    public <T> void saveAllObjects(Set<T> objects) {
         writeAll(objects, false);
     }
 
@@ -184,19 +182,20 @@ public class CsvDataDriver implements DataDriver {
     }
 
     @Override
-    public <T> void appendAllObjects(List<T> objects) {
+    public <T> void appendAllObjects(Set<T> objects) {
         writeAll(objects, true);
     }
 
     @Override
-    public <T> List<T> getAll(Class<T> tClass) {
+    public <T> Set<T> getAll(Class<T> tClass) {
         String fileName = tClass.getSimpleName() + ".csv";
         try {
             MappingStrategy<T> strategy = new FuzzyMappingStrategyBuilder<T>().build();
             strategy.setType(tClass);
             File csvFile = FileHelper.readFile(DataConstants.DATA_FOLDER, fileName);
             List<T> beans = new CsvToBeanBuilder<T>(new FileReader(csvFile)).withMappingStrategy(strategy).build().parse();
-            return beans;
+
+            return new HashSet<>(beans);
         } catch (Throwable ex) {
             ApplicationException applicationException = new ApplicationException();
 
