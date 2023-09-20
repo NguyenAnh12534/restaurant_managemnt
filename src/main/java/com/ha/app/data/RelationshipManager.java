@@ -1,4 +1,4 @@
-package com.ha.app.data.relationships;
+package com.ha.app.data;
 
 import com.ha.app.annotations.data.Entity;
 import com.ha.app.annotations.data.ManyToOne;

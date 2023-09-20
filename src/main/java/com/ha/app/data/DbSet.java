@@ -17,7 +17,7 @@ public class DbSet<T> {
     private DataDriver dataDriver;
     private DbContext dbContext;
     private boolean isFiltering = false;
-
+    private boolean isDataChanged = true;
     public DbSet(Class<T> tClass, DataDriver dataDriver, DbContext dbContext) {
         this.dataDriver = dataDriver;
         this.targetClass = tClass;
@@ -78,15 +78,19 @@ public class DbSet<T> {
         return (T) elements.toArray()[0];
     }
 
-    public boolean create(Item item) {
+    public boolean create(T item) {
+        initElements();
         if (this.elements.size() > 0) {
             this.dataDriver.appendObject(item);
-        } else
+        } else {
             this.dataDriver.saveObject(item);
+        }
+
+        this.isDataChanged = true;
         return true;
     }
 
-    public boolean create(Set<Item> items) {
+    public boolean create(Set<T> items) {
         this.dataDriver.appendAllObjects(items);
         return true;
     }
@@ -134,11 +138,14 @@ public class DbSet<T> {
     }
 
     private void initElements() {
-        this.elements = this.dataDriver.getAll(targetClass);
-        if(!elements.isEmpty()) {
-            this.elements.forEach(element -> {
-                this.dbContext.eagerLoadDataForEntity(element);
-            });
+        if(isDataChanged) {
+            isDataChanged = false;
+            this.elements = this.dataDriver.getAll(targetClass);
+            if (!elements.isEmpty()) {
+                this.elements.forEach(element -> {
+                    this.dbContext.eagerLoadDataForEntity(element);
+                });
+            }
         }
     }
 }
