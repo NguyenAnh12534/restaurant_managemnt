@@ -13,9 +13,10 @@ import java.util.Set;
 
 public class DbContextTest {
     static DbContext dbContext;
+
     @BeforeAll
     public static void setup() {
-        dbContext  = new DbContext(new CsvDataDriver());
+        dbContext = new DbContext(new CsvDataDriver());
     }
 
     @Test
@@ -26,15 +27,26 @@ public class DbContextTest {
     }
 
     @Test
-    public void testEagerLoading() throws NoSuchFieldException, IllegalAccessException {
+    public void testEagerLoadingManyToOne() throws NoSuchFieldException, IllegalAccessException {
         Set<Item> items = dbContext.getDbSetOf(Item.class).getAll();
         Field parentField = Item.class.getDeclaredField("menu");
         for (Item item : items) {
             dbContext.eagerLoadDataForField(parentField, item);
             System.out.println(item);
         }
+    }
 
-
+    @Test
+    public void testEagerLoadingOneToMany() throws NoSuchFieldException, IllegalAccessException {
+        Menu menu = dbContext.getDbSetOf(Menu.class).filterByField("id", 1).getOne();
+        Field childrenField = Menu.class.getDeclaredField("items");
+        dbContext.eagerLoadDataForField(childrenField, menu);
+        System.out.println(menu.getName());
+        if(!menu.getItems().isEmpty()) {
+            menu.getItems().forEach(item -> {
+                System.out.println(item);
+            });
+        }
     }
 
     public void tearDown() throws Exception {

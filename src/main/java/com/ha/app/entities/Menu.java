@@ -5,7 +5,9 @@ import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.OneToMany;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Menu {
@@ -13,8 +15,8 @@ public class Menu {
     private int id;
     private String name;
 
-    @OneToMany(mappedBy = "menu")
-    private List<Item> items;
+    @OneToMany(mappedBy = "menu", childEntity = Item.class)
+    private Set<Item> items = new HashSet<>();
 
     public int getId() {
         return id;
@@ -32,19 +34,28 @@ public class Menu {
         this.name = name;
     }
 
-    public List<Item> getItems() {
+    public Set<Item> getItems() {
         if (items == null) {
-            this.items = new ArrayList<>();
+            this.items = new HashSet<>();
         }
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(Set<Item> items) {
         this.items = items;
     }
 
     @Override
     public String toString() {
-        return "Menu: " + name ;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( "Menu: " + name + "\n");
+        if(!this.items.isEmpty()) {
+            stringBuilder.append("All items: \n");
+            for (Item item : this.items) {
+                stringBuilder.append(item);
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }

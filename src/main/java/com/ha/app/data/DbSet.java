@@ -75,14 +75,13 @@ public class DbSet<T> {
 
         if (elements.isEmpty())
             return null;
-
         return (T) elements.toArray()[0];
     }
 
     public boolean create(Item item) {
-        if(this.elements.size() > 0) {
+        if (this.elements.size() > 0) {
             this.dataDriver.appendObject(item);
-        }else
+        } else
             this.dataDriver.saveObject(item);
         return true;
     }
@@ -136,13 +135,10 @@ public class DbSet<T> {
 
     private void initElements() {
         this.elements = this.dataDriver.getAll(targetClass);
-        Field[] fields = targetClass.getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(OneToMany.class)) {
-                //handle One To Many
-            } else if (field.isAnnotationPresent(ManyToOne.class)) {
-                //handle Many To One
-            }
+        if(!elements.isEmpty()) {
+            this.elements.forEach(element -> {
+                this.dbContext.eagerLoadDataForEntity(element);
+            });
         }
     }
 }

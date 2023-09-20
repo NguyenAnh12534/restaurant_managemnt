@@ -1,17 +1,15 @@
-Full bug id: CsvDataDriver:ReadingDataFromCsv/
+Full bug id: DbContext:EagerLoadingData/
 Error type: INTERNAL
 Severity: CRITICAL
 Stack trace: 
 [
 	{
-		Context ID: CsvDataDriver
-		Error ID: ReadingDataFromCsv
+		Context ID: DbContext
+		Error ID: EagerLoadingData
 		Error Type: INTERNAL
 		Severity Type: CRITICAL
-		Error description: Data in CSV file is in wrong format. Detail message: Error parsing CSV line: 2. []
-		Error correction: Check data in CSV file
-		Variables at runtime: 
-			filePath: database/Item.csv
+		Error description: null
+		Error correction: Fail to persisting data from relationships.
 
 	},
 ]

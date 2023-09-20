@@ -84,6 +84,8 @@ public class Item{
         stringBuilder.append(this.name);
         stringBuilder.append(", Price: ");
         stringBuilder.append(this.price);
+        stringBuilder.append(", Menu ID: ");
+        stringBuilder.append(this.menu_id);
         if(this.menu_id != 0) {
             stringBuilder.append(", ");
             stringBuilder.append(this.menu);
