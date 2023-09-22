@@ -29,7 +29,7 @@ public class MenuRepositoryImpl implements MenuRepository {
             ErrorInfo errorInfo = new ErrorInfo();
 
             errorInfo.setContextId(this.getClass().getSimpleName());
-            errorInfo.setErrorId("GetOneItem");
+            errorInfo.setErrorId("GetOneMenu");
 
             exception.addErrorInfo(errorInfo);
 
@@ -39,26 +39,54 @@ public class MenuRepositoryImpl implements MenuRepository {
 
     @Override
     public Set<Menu> getAll() {
-        return null;
+        try{
+            Set<Menu> menus = dbContext.getDbSetOf(Menu.class).getAll();
+            return menus;
+        }catch (ApplicationException exception){
+            ErrorInfo errorInfo = new ErrorInfo();
+
+            errorInfo.setContextId(this.getClass().getSimpleName());
+            errorInfo.setErrorId("GetAllMenu");
+
+            exception.addErrorInfo(errorInfo);
+
+            throw exception;
+        }
     }
 
     @Override
     public void create(Menu menu) {
+        try{
+            this.dbContext.getDbSetOf(Menu.class).create(menu);
+        }
+        catch (ApplicationException exception){
+            ErrorInfo errorInfo = new ErrorInfo();
 
+            errorInfo.setContextId(this.getClass().getSimpleName());
+            errorInfo.setErrorId("GetAllMenu");
+
+            exception.addErrorInfo(errorInfo);
+
+            throw exception;
+        }
     }
 
     @Override
     public void update(Menu newMenu) {
+        Menu oldMenu = this.dbContext.getDbSetOf(Menu.class).findById(newMenu.getId());
+        oldMenu.setName(newMenu.getName());
+        oldMenu.setItems(newMenu.getItems());
 
+        this.dbContext.getDbSetOf(Item.class).flush();
     }
 
     @Override
     public void delete(int id) {
-
+        this.dbContext.getDbSetOf(Menu.class).deleteById(id);
     }
 
     @Override
-    public boolean isExisted(int itemId) {
-        return false;
+    public boolean isExisted(int menuId) {
+        return dbContext.getDbSetOf(Menu.class).findById(menuId) != null;
     }
 }

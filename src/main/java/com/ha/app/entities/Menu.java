@@ -14,9 +14,16 @@ public class Menu {
     @Id
     private int id;
     private String name;
-
     @OneToMany(mappedBy = "menu", childEntity = Item.class)
     private Set<Item> items = new HashSet<>();
+
+    public Menu() {
+    }
+
+    public Menu(Menu menu) {
+        this.id = menu.id;
+        this.name = menu.name;
+    }
 
     public int getId() {
         return id;
@@ -48,8 +55,8 @@ public class Menu {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append( "Menu: " + name + "\n");
-        if(!this.items.isEmpty()) {
+        stringBuilder.append("Menu: " + name + "\n");
+        if (!this.items.isEmpty()) {
             stringBuilder.append("All items: \n");
             for (Item item : this.items) {
                 stringBuilder.append(item);

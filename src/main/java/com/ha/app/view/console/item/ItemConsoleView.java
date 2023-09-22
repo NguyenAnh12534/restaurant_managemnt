@@ -36,7 +36,7 @@ public class ItemConsoleView extends ConsoleView {
     }
 
     @ViewFeature
-    public void getAllItem() {
+    public void viewAllItem() {
         Set<Item> items = itemController.getAll();
         System.out.println("All items are displayed as below: ");
         items.forEach(item -> {
@@ -70,7 +70,7 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void updateItem() {
-        this.getAllItem();
+        this.viewAllItem();
         System.out.println("Please enter ID of the item to be updated: ");
         int oldItemId = inputHelper.getInteger();
 
@@ -98,7 +98,7 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void deleteItem() {
-        this.getAllItem();
+        this.viewAllItem();
         System.out.println("Please enter ID of the item to be deleted: ");
         int deleteItemId = inputHelper.getInteger();
 

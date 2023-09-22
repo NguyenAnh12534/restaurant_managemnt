@@ -20,7 +20,6 @@ public class ItemController{
 
     public Set<Item> getAll() {
         Set<Item> items = itemService.getAll();
-
         return items;
     }
 
