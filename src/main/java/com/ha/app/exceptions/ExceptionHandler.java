@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * This class handles all exceptions of the applications
+ */
 public class ExceptionHandler {
     private static ExceptionHandler exceptionHandler = null;
 

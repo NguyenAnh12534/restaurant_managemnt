@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to mark a method as a feature of a View
+ * The feature is automatically loaded by Application Context
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

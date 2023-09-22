@@ -6,6 +6,9 @@ import com.ha.app.enums.errors.ErrorType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class contains information of an error
+ */
 public class ErrorInfo {
 
     protected Throwable cause;

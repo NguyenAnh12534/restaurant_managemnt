@@ -5,14 +5,14 @@ import com.ha.app.enums.errors.ErrorSeverity;
 import com.ha.app.enums.errors.ErrorType;
 import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
-import com.ha.app.exceptions.ExitExcpetion;
 import com.ha.app.exceptions.InvalidInputException;
 import com.ha.app.helpers.InputHelper;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
+/**
+ * This class handle View Selection
+ */
 public class MainScreen {
     List<Renderable> crudViews = new ArrayList<>();
     private int currentViewIndex;

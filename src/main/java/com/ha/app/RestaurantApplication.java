@@ -1,10 +1,13 @@
 package com.ha.app;
 
+
 import com.ha.app.annotations.ui.View;
 import com.ha.app.commons.depedencyinjection.ApplicationContext;
 import com.ha.app.exceptions.ExceptionHandler;
 import com.ha.app.exceptions.ExitExcpetion;
 import com.ha.app.view.MainScreen;
+import java.util.function.Consumer;
+
 
 
 /**
@@ -21,8 +24,7 @@ public class RestaurantApplication {
                 mainScreen.render();
             } catch (ExitExcpetion exitExcpetion) {
                 System.out.println("Stop operation");
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 exceptionHandler.notifyUser(e);
                 exceptionHandler.notifyNonUser(e);
             }
@@ -31,7 +33,10 @@ public class RestaurantApplication {
     }
 
     public static void main(String[] args) {
-
+        Consumer<Integer> myFunction = (a) -> {
+            System.out.println(a);
+        };
+        myFunction.accept(2);
         RestaurantApplication restaurantApplication = new RestaurantApplication();
         restaurantApplication.applicationContext = new ApplicationContext(restaurantApplication.getClass().getPackageName());
 

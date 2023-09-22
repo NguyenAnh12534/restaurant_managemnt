@@ -7,7 +7,6 @@ import com.ha.app.controllers.ItemController;
 import com.ha.app.entities.Item;
 import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
-import com.ha.app.exceptions.ExitExcpetion;
 import com.ha.app.helpers.InputHelper;
 import com.ha.app.view.console.ConsoleView;
 
@@ -47,13 +46,13 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void createItem() {
-        System.out.print("Please enter ID of the item: ");
+        System.out.println("Please enter ID of the item: ");
         int itemId = inputHelper.getInteger();
 
-        System.out.print("Please enter name of the item: ");
+        System.out.println("Please enter name of the item: ");
         String itemName = inputHelper.getLine();
 
-        System.out.print("Please enter price of the item: ");
+        System.out.println("Please enter price of the item: ");
         double itemPrice = inputHelper.getDouble();
 
         Item newItem = new Item(itemId, itemName, itemPrice);
@@ -71,6 +70,7 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void updateItem() {
+        this.getAllItem();
         System.out.println("Please enter ID of the item to be updated: ");
         int oldItemId = inputHelper.getInteger();
 
@@ -98,7 +98,8 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void deleteItem() {
-        System.out.print("Please enter ID of the item to be deleted: ");
+        this.getAllItem();
+        System.out.println("Please enter ID of the item to be deleted: ");
         int deleteItemId = inputHelper.getInteger();
 
         try {

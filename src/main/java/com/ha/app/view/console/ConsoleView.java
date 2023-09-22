@@ -2,16 +2,13 @@ package com.ha.app.view.console;
 
 import com.ha.app.annotations.ui.ViewFeature;
 import com.ha.app.exceptions.ApplicationException;
-import com.ha.app.exceptions.ExitExcpetion;
 import com.ha.app.exceptions.InvalidInputException;
 import com.ha.app.helpers.InputHelper;
 import com.ha.app.view.Renderable;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
     private InputHelper inputHelper = InputHelper.getInstance();
@@ -27,7 +24,6 @@ public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
     public void render() {
         selectFeature();
         executeFeature();
-
     }
 
     private void selectFeature() {

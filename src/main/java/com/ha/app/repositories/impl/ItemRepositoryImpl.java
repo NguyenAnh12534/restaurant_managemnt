@@ -14,6 +14,7 @@ import com.ha.app.repositories.ItemRepository;
 
 import javax.xml.crypto.Data;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -22,15 +23,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     private DbContext dbContext;
 
     @Override
-    public Item get(int id) {
+    public Optional<Item> get(int id) {
         try {
             Item item = dbContext.getDbSetOf(Item.class).findById(id);
-            if (item != null) {
-                Menu menu = dbContext.getDbSetOf(Menu.class).findById(id);
-                if (menu != null)
-                    item.setMenu(menu);
-            }
-            return item;
+            return Optional.of(item);
         } catch (ApplicationException exception) {
             ErrorInfo errorInfo = new ErrorInfo();
 
@@ -55,8 +51,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public void update(Item newItem, int oldItemId) {
-        Item oldItem = this.dbContext.getDbSetOf(Item.class).findById(oldItemId);
+    public void update(Item newItem) {
+        Item oldItem = this.dbContext.getDbSetOf(Item.class).findById(newItem.getId());
         oldItem.setName(newItem.getName());
         oldItem.setPrice(newItem.getPrice());
 

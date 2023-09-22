@@ -1,27 +1,39 @@
 package com.ha.app.repositories.impl;
 
-import com.ha.app.commons.depedencyinjection.ApplicationContext;
 import com.ha.app.data.DbContext;
-import com.ha.app.data.drivers.DataDriver;
-import com.ha.app.data.drivers.impl.CsvDataDriver;
+import com.ha.app.data.DbSet;
 import com.ha.app.entities.Item;
 import com.ha.app.repositories.ItemRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 class ItemRepositoryImplTest {
-    private static ItemRepository itemRepository;
-    @BeforeAll
-    public static void setup() {
-        DataDriver dataDriver = new CsvDataDriver();
-        DbContext dbContext = new DbContext(dataDriver);
-        itemRepository = new ItemRepositoryImpl(dbContext);
+
+    @InjectMocks
+    private static ItemRepository itemRepository = new ItemRepositoryImpl();
+    @Mock
+    private static DbContext dbContext;
+    @Mock
+    private static DbSet<Item> itemDbSet;
+
+
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+        when(dbContext.getDbSetOf(Item.class)).thenReturn(itemDbSet);
+        when(dbContext.getDbSetOf(Item.class).getAll()).thenReturn(new HashSet<>());
+
     }
+
     @Test
     void testCreateNewItem() {
         Item item = new Item();
@@ -32,6 +44,7 @@ class ItemRepositoryImplTest {
 
         itemRepository.create(item);
     }
+
     @Test
     void testGetItemById() {
 //        int selectedId = 3;
@@ -45,9 +58,8 @@ class ItemRepositoryImplTest {
     @Test
     void testGetAllItem() {
         Set<Item> items = itemRepository.getAll();
-        System.out.println(items.size());
+        Assertions.assertEquals(0, items.size());
     }
-
 
 
     @Test

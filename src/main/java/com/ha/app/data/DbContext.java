@@ -17,6 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class is the container of all DbSet in the application
+ * Each DbSet handles data of an Entity
+ */
 public class DbContext {
     private final DataDriver dataDriver;
     private Map<Class<?>, DbSet> dbSetMap = new HashMap<>();
@@ -32,16 +36,19 @@ public class DbContext {
         return this.dbSetMap.get(tClass);
     }
 
-    public Map<Class<?>, DbSet> getDbSetMap() {
-        return this.dbSetMap;
-    }
-
+    /**
+     * This method save data changes
+     */
     public void flush() {
         dbSetMap.forEach((aClass, dbSet) -> {
             dbSet.flush();
         });
     }
 
+    /**
+     * This method helps to scan all entities in application
+     * A DbSet in then created for each entity
+     */
     private void scanForDbSets() {
         List<Class<?>> classes = ClassHelper.getAllClassesInPackage(DataConstants.ENTITIES_PACKAGE);
         classes.forEach(targetClass -> {
@@ -51,12 +58,23 @@ public class DbContext {
         });
     }
 
+    /**
+     * This method creates a DbSet for an Entity
+     * The newly created DbSet is added directly into dbSetMap
+     * @param tClass Class of the Entity of the DbSet
+     * @param <T> Type of the Entity of the DbSet
+     */
     private <T> void addDbSetOfModal(Class<T> tClass) {
 
         this.dbSetMap.put(tClass, new DbSet(tClass, dataDriver, this));
     }
 
-    public <T> void eagerLoadDataForEntity(T object) {
+    /**
+     * This method help to eagerly load data for all relationships of an Entity
+     * @param object the concrete Entity object to load data for
+     *
+     */
+    public void eagerLoadDataForEntity(Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
         try {
             for (Field field : fields) {
@@ -80,7 +98,14 @@ public class DbContext {
         }
     }
 
-    public <T> void eagerLoadDataForField(Field field, T object) throws NoSuchFieldException, IllegalAccessException {
+    /**
+     * This method load data of a relationship field in a Entity
+     * @param field the relationship field
+     * @param object the concrete Entity object
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    public void eagerLoadDataForField(Field field, Object object) throws NoSuchFieldException, IllegalAccessException {
         if (field.isAnnotationPresent(ManyToOne.class)) {
             loadDataForManyToOne(field, object);
         } else if (field.isAnnotationPresent(OneToMany.class)) {
@@ -88,7 +113,14 @@ public class DbContext {
         }
     }
 
-    private <T> void loadDataForManyToOne(Field field, T object) throws NoSuchFieldException, IllegalAccessException {
+    /**
+     * This method load data for ManyToOne relationship
+     * @param field the field with ManyToOne relationship in an Entity
+     * @param object the concrete Entity object
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    private  void loadDataForManyToOne(Field field, Object object) throws NoSuchFieldException, IllegalAccessException {
 
         Class<?> parentClass = field.getType();
         Class<?> childClass = object.getClass();
@@ -110,7 +142,14 @@ public class DbContext {
         }
     }
 
-    private <T> void loadDataForOneToMany(Field field, T object) throws NoSuchFieldException, IllegalAccessException {
+    /**
+     * This method load data for OneToMany relationship
+     * @param field the field with ManyToOne relationship in an Entity
+     * @param object the concrete Entity object
+     * @throws NoSuchFieldException
+     * @throws IllegalAccessException
+     */
+    private void loadDataForOneToMany(Field field, Object object) throws NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
         OneToMany oneToMany = field.getAnnotation(OneToMany.class);
         Class<?> childClass = oneToMany.childEntity();
@@ -140,6 +179,13 @@ public class DbContext {
         }
     }
 
+    /**
+     * This method check if an eager loading operation from an Entity to another will create a circular reference or not
+     * Therefore, it helps prevent stackoverflow error when eager loading data
+     * @param sourceClass the source entity
+     * @param targetClass the target entity being linked to
+     * @return
+     */
     private boolean willCreateCircular(Class<?> sourceClass, Class<?> targetClass) {
         if (this.relationshipManager.isConnected(sourceClass, targetClass) && !this.relationshipManager.isOldConnection(sourceClass, targetClass)) {
             return true;

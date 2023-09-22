@@ -5,6 +5,10 @@ import com.ha.app.enums.errors.ErrorType;
 
 import java.util.Stack;
 
+/**
+ * This is the main Exception class of application
+ * Every custom exception extends from this class
+ */
 public class ApplicationException extends RuntimeException {
 
     private Stack<ErrorInfo> errorInfos = new Stack<>();

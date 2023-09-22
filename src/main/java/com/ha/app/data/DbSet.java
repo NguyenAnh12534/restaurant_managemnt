@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * This class handle data of an Entity
+ * @param <T> type of the Entity being handled
+ */
 public class DbSet<T> {
     private Set<T> elements = new HashSet<>();
     private Class<T> targetClass;
@@ -18,13 +22,16 @@ public class DbSet<T> {
     private DbContext dbContext;
     private boolean isFiltering = false;
     private boolean isDataChanged = true;
+    public DbSet() {
+
+    }
     public DbSet(Class<T> tClass, DataDriver dataDriver, DbContext dbContext) {
         this.dataDriver = dataDriver;
         this.targetClass = tClass;
         this.dbContext = dbContext;
     }
 
-    private DbSet(DbSet dbSet) {
+    public DbSet(DbSet dbSet) {
         this.dataDriver = dbSet.dataDriver;
         this.elements = new HashSet<>(dbSet.elements);
         this.dbContext = dbSet.dbContext;

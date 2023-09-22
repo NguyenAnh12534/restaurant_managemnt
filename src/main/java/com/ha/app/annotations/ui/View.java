@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to mark a class as view class
+ * View classes contains ViewFeature
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
