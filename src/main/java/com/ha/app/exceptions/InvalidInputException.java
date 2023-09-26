@@ -1,32 +1,38 @@
 package com.ha.app.exceptions;
 
-public class InvalidInputException extends RuntimeException{
+import com.ha.app.enums.errors.ErrorSeverity;
+import com.ha.app.enums.errors.ErrorType;
 
-    /*
-     * Required when we want to add a custom message when throwing the exception
-     * as throw new InvalidInputException("Input is invalid");
-     */
-    public InvalidInputException(String message) {
-        super(message);
+public class InvalidInputException extends ApplicationException{
+
+    private ErrorInfo errorInfo;
+    public InvalidInputException() {
+        super();
+        this.errorInfo = new ErrorInfo();
+
+        errorInfo.setErrorSeverity(ErrorSeverity.WARNING);
+        errorInfo.setErrorType(ErrorType.CLIENT);
+        errorInfo.setErrorId("InvalidInput");
+        errorInfo.setErrorCorrection("Require user to enter other value");
+
+        super.addErrorInfo(this.errorInfo);
     }
 
-    /*
-     * Required when we want to wrap the exception generated inside the catch block and rethrow it
-     * as catch(ArrayIndexOutOfBoundsException e) {
-     * throw new CustomUncheckedException(e);
-     * }
-     */
     public InvalidInputException(Throwable cause) {
-        super(cause);
+        this();
+        this.errorInfo.setCause(cause);
+    }
+    public void setErrorDescription(String errorDescription) {
+        this.errorInfo.setErrorDescription(errorDescription);
+    }
+    public void setContext(String context) {
+        this.errorInfo.setContextId(context);
     }
 
-    /*
-     * Required when we want both the above
-     * as catch(ArrayIndexOutOfBoundsException e) {
-     * throw new InvalidInputException(e, "Invalid input");
-     * }
-     */
-    public InvalidInputException(String message, Throwable throwable) {
-        super(message, throwable);
+    public void addParameter(String field, Object value) {
+        this.errorInfo.getParameters().put(field, value);
+    }
+    public ErrorInfo getErrorInfo() {
+        return this.errorInfo;
     }
 }

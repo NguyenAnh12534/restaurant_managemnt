@@ -1,11 +1,19 @@
 package com.ha.app.helpers;
 
+import com.ha.app.annotations.data.Entity;
+import com.ha.app.annotations.data.ManyToOne;
+import com.ha.app.annotations.data.OneToMany;
+import com.ha.app.exceptions.ApplicationException;
+import com.ha.app.exceptions.InvalidInputException;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClassHelper {
 
@@ -13,6 +21,20 @@ public class ClassHelper {
         List<Class<?>> classes = RuntimeHelper.isRunningFromJar() ? scanComponentsInJar(packageName) : scanComponents(packageName);
 
         return classes;
+    }
+
+    public static List<Field> getFilterableField(Class<?> targetClass) {
+        if(!targetClass.isAnnotationPresent(Entity.class)) {
+            InvalidInputException invalidInputException = new InvalidInputException();
+            invalidInputException.setErrorDescription("Input class is not an Entity class");
+            throw invalidInputException;
+        }
+
+        List<Field> filterableFields = Arrays.stream(targetClass.getDeclaredFields()).filter(field -> {
+            return !(field.isAnnotationPresent(OneToMany.class) || field.isAnnotationPresent(ManyToOne.class)) ;
+        }).collect(Collectors.toList());
+
+        return filterableFields;
     }
 
     public static Field getFieldByName(Class targetClass, String fieldName) {

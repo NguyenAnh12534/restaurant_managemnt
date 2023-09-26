@@ -9,6 +9,9 @@ import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.repositories.MenuRepository;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,6 +38,11 @@ public class MenuRepositoryImpl implements MenuRepository {
 
             throw exception;
         }
+    }
+
+    @Override
+    public Set<Menu> getAllByFields(Map<Field, Object> criteria) {
+        return null;
     }
 
     @Override

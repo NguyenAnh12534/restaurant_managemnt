@@ -7,9 +7,14 @@ import com.ha.app.controllers.ItemController;
 import com.ha.app.entities.Item;
 import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
+import com.ha.app.exceptions.InvalidInputException;
+import com.ha.app.helpers.ClassHelper;
 import com.ha.app.helpers.InputHelper;
 import com.ha.app.view.console.ConsoleView;
 
+import java.lang.reflect.Field;
+import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -36,10 +41,42 @@ public class ItemConsoleView extends ConsoleView {
     }
 
     @ViewFeature
-    public void viewAllItem() {
+    public void viewAllItems() {
         Set<Item> items = itemController.getAll();
         System.out.println("All items are displayed as below: ");
         items.forEach(item -> {
+            System.out.println(item);
+        });
+    }
+
+    @ViewFeature
+    public void viewAllItemsWithFilter(){
+        boolean isChoosingFilter = true;
+        List<Field> filterableField = ClassHelper.getFilterableField(Item.class);
+        HashMap<Field, Object> criteria = new HashMap<>();
+        while(isChoosingFilter) {
+            System.out.println("Please choose a field to filter: ");
+            for(int i = 0; i < filterableField.size(); i++) {
+                System.out.println(i+1 + ". " + filterableField.get(i).getName());
+            }
+            System.out.println("Choose index of the desired filter: ");
+            int selectedFieldIndex = this.inputHelper.selectIndexOfCollection(filterableField) - 1;
+
+            Field selectedField = filterableField.get(selectedFieldIndex);
+            Object valueToFilterBy = inputHelper.getInputOfType(selectedField.getType());
+            criteria.put(selectedField, valueToFilterBy);
+            filterableField.remove(selectedField);
+            isChoosingFilter = false;
+
+            System.out.print("Do you want to add another filter (Y/N) - default is N: ");
+            String continueOption = this.inputHelper.getLine();
+            if(continueOption.trim().toLowerCase().equals("y")) {
+                isChoosingFilter = true;
+            }
+        }
+        Set<Item> filteredItems = this.itemController.getAllByFields(criteria);
+        System.out.println("All filtered items are displayed as below: ");
+        filteredItems.forEach(item -> {
             System.out.println(item);
         });
     }
@@ -70,7 +107,7 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void updateItem() {
-        this.viewAllItem();
+        this.viewAllItems();
         System.out.println("Please enter ID of the item to be updated: ");
         int oldItemId = inputHelper.getInteger();
 
@@ -98,7 +135,7 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void deleteItem() {
-        this.viewAllItem();
+        this.viewAllItems();
         System.out.println("Please enter ID of the item to be deleted: ");
         int deleteItemId = inputHelper.getInteger();
 

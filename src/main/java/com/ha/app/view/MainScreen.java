@@ -57,10 +57,8 @@ public class MainScreen {
         for (int i = 0; i < crudViews.size(); i++) {
             System.out.println(i + 1 + ". " + crudViews.get(i).getClass().getSimpleName());
         }
-        int chosenIndex = inputHelper.getInteger();
-        if (chosenIndex > crudViews.size()) {
-            throw new InvalidInputException("Chosen number is too large");
-        }
+
+        int chosenIndex = inputHelper.selectIndexOfCollection(this.crudViews);
         this.currentViewIndex = chosenIndex - 1;
     }
 

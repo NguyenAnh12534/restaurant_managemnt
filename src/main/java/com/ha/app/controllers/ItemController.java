@@ -5,7 +5,9 @@ import com.ha.app.annotations.Controller;
 import com.ha.app.entities.Item;
 import com.ha.app.services.ItemService;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Controller
@@ -21,6 +23,10 @@ public class ItemController{
     public Set<Item> getAll() {
         Set<Item> items = itemService.getAll();
         return items;
+    }
+
+    public Set<Item> getAllByFields(Map<Field, Object> criteria) {
+        return this.itemService.getAllByFields(criteria);
     }
 
     public void create(Item item) {

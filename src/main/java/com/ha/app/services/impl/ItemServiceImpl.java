@@ -11,7 +11,9 @@ import com.ha.app.exceptions.NotFoundException;
 import com.ha.app.repositories.ItemRepository;
 import com.ha.app.services.ItemService;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -38,6 +40,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Set<Item> getAll() {
         return itemRepository.getAll();
+    }
+
+    @Override
+    public Set<Item> getAllByFields(Map<Field, Object> criteria) {
+        return this.itemRepository.getAllByFields(criteria);
     }
 
     @Override

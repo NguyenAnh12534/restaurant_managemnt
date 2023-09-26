@@ -31,10 +31,7 @@ public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
         for (int i = 0; i < this.features.size(); i++) {
             System.out.println(i + 1 + ". " + this.features.get(i).getName());
         }
-        int i;
-        i = inputHelper.getInteger();
-        if(i > this.features.size())
-            throw new InvalidInputException("Number enter is too large");
+        int i = this.inputHelper.selectIndexOfCollection(this.features);
         this.selectedIndex = i - 1;
     }
 

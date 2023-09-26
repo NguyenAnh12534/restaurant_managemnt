@@ -1,9 +1,6 @@
 package com.ha.app.data;
 
-import com.ha.app.annotations.data.ManyToOne;
-import com.ha.app.annotations.data.OneToMany;
 import com.ha.app.data.drivers.DataDriver;
-import com.ha.app.entities.Item;
 import com.ha.app.helpers.ClassHelper;
 
 import java.lang.reflect.Field;
@@ -35,10 +32,10 @@ public class DbSet<T> {
         this.dataDriver = dbSet.dataDriver;
         this.elements = new HashSet<>(dbSet.elements);
         this.dbContext = dbSet.dbContext;
+        this.targetClass = dbSet.targetClass;
     }
 
     public DbSet<T> filterByField(String fieldName, Object value) {
-        this.isFiltering = true;
         this.initElements();
 
         DbSet<T> newDbSet = new DbSet<>(this);
@@ -55,7 +52,13 @@ public class DbSet<T> {
             targetField.setAccessible(true);
             newDbSet.elements.forEach(element -> {
                 try {
-                    if (targetField.get(element).equals(value)) {
+                    if(targetField.getType().equals(String.class)) {
+                        String databaseValue = (String) targetField.get(element);
+                         if(databaseValue.contains((String)value)) {
+                             newElements.add(element);
+                         }
+                    }
+                    else if (targetField.get(element).equals(value)) {
                         newElements.add(element);
                     }
                 } catch (IllegalAccessException e) {
@@ -145,6 +148,9 @@ public class DbSet<T> {
     }
 
     private void initElements() {
+        if(this.isFiltering)
+            return;
+
         if(isDataChanged) {
             isDataChanged = false;
             this.elements = this.dataDriver.getAll(targetClass);

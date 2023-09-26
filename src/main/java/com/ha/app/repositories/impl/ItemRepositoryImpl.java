@@ -3,6 +3,7 @@ package com.ha.app.repositories.impl;
 import com.ha.app.annotations.Component;
 import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
+import com.ha.app.data.DbSet;
 import com.ha.app.data.drivers.DataDriver;
 import com.ha.app.entities.Item;
 import com.ha.app.entities.Menu;
@@ -13,7 +14,10 @@ import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.repositories.ItemRepository;
 
 import javax.xml.crypto.Data;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -21,6 +25,13 @@ import java.util.Set;
 public class ItemRepositoryImpl implements ItemRepository {
     @PersistenceContext
     private DbContext dbContext;
+
+    public ItemRepositoryImpl() {
+
+    }
+    public ItemRepositoryImpl(DbContext dbContext) {
+        this.dbContext = dbContext;
+    }
 
     @Override
     public Optional<Item> get(int id) {
@@ -37,6 +48,16 @@ public class ItemRepositoryImpl implements ItemRepository {
 
             throw exception;
         }
+    }
+
+    @Override
+    public Set<Item> getAllByFields(Map<Field, Object> criteria) {
+        DbSet<Item> itemDbSet = this.dbContext.getDbSetOf(Item.class);
+        for (Map.Entry<Field, Object> filter : criteria.entrySet()) {
+            itemDbSet = itemDbSet.filterByField(filter.getKey().getName(), filter.getValue());
+        }
+
+        return itemDbSet.getAll();
     }
 
     @Override
@@ -70,11 +91,4 @@ public class ItemRepositoryImpl implements ItemRepository {
         return dbContext.getDbSetOf(Item.class).findById(itemId) != null;
     }
 
-    public ItemRepositoryImpl() {
-
-    }
-
-    public ItemRepositoryImpl(DbContext dbContext) {
-        this.dbContext = dbContext;
-    }
 }

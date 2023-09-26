@@ -2,6 +2,8 @@ package com.ha.app.repositories.impl;
 
 import com.ha.app.data.DbContext;
 import com.ha.app.data.DbSet;
+import com.ha.app.data.drivers.DataDriver;
+import com.ha.app.data.drivers.impl.CsvDataDriver;
 import com.ha.app.entities.Item;
 import com.ha.app.repositories.ItemRepository;
 import org.junit.jupiter.api.Assertions;
@@ -11,27 +13,24 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
 class ItemRepositoryImplTest {
 
-    @InjectMocks
-    private static ItemRepository itemRepository = new ItemRepositoryImpl();
-    @Mock
+    private static ItemRepository itemRepository;
     private static DbContext dbContext;
-    @Mock
-    private static DbSet<Item> itemDbSet;
 
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
-        when(dbContext.getDbSetOf(Item.class)).thenReturn(itemDbSet);
-        when(dbContext.getDbSetOf(Item.class).getAll()).thenReturn(new HashSet<>());
-
+        DataDriver dataDriver = new CsvDataDriver();
+        dbContext = new DbContext(dataDriver);
+        itemRepository = new ItemRepositoryImpl(dbContext);
     }
 
     @Test
@@ -83,6 +82,18 @@ class ItemRepositoryImplTest {
 //        Item updatedItem = itemRepository.get(idToDelete);
 //        Assertions.assertNull(updatedItem);
     }
+
+//    @Test
+//    void testFilterByFields(){
+//        HashMap<String, Object> criteria = new HashMap<>();
+//        criteria.put("name", "duc");
+//        criteria.put("price", 123.0);
+//        Set<Item> items = itemRepository.getAllByFields(criteria);
+//        System.out.println(items.size());
+//        items.forEach(item -> {
+//            System.out.println(item);
+//        });
+//    }
 
 
 }
