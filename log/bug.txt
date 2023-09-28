@@ -1,4 +1,4 @@
-Full bug id: DbContext:EagerLoadingData/
+Full bug id: DbContext:EagerLoadingData/ItemRepositoryImpl:GetOneItem/
 Error type: INTERNAL
 Severity: CRITICAL
 Stack trace: 
@@ -10,6 +10,13 @@ Stack trace:
 		Severity Type: CRITICAL
 		Error description: null
 		Error correction: Fail to persisting data from relationships.
+
+	},
+	{
+		Context ID: ItemRepositoryImpl
+		Error ID: GetOneItem
+		Error description: null
+		Error correction: null
 
 	},
 ]

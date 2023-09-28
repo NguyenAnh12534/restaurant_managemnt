@@ -1,5 +1,6 @@
 package com.ha.app.data;
 
+import com.ha.app.annotations.data.Id;
 import com.ha.app.data.drivers.DataDriver;
 import com.ha.app.helpers.ClassHelper;
 
@@ -10,7 +11,9 @@ import java.util.Set;
 
 /**
  * This class handle data of an Entity
- * @param <T> type of the Entity being handled
+ *
+ * @param <T>
+ *         type of the Entity being handled
  */
 public class DbSet<T> {
     private Set<T> elements = new HashSet<>();
@@ -19,9 +22,12 @@ public class DbSet<T> {
     private DbContext dbContext;
     private boolean isFiltering = false;
     private boolean isDataChanged = true;
+    private int nextId = -1;
+
     public DbSet() {
 
     }
+
     public DbSet(Class<T> tClass, DataDriver dataDriver, DbContext dbContext) {
         this.dataDriver = dataDriver;
         this.targetClass = tClass;
@@ -52,13 +58,12 @@ public class DbSet<T> {
             targetField.setAccessible(true);
             newDbSet.elements.forEach(element -> {
                 try {
-                    if(targetField.getType().equals(String.class)) {
+                    if (targetField.getType().equals(String.class)) {
                         String databaseValue = (String) targetField.get(element);
-                         if(databaseValue.contains((String)value)) {
-                             newElements.add(element);
-                         }
-                    }
-                    else if (targetField.get(element).equals(value)) {
+                        if (databaseValue.contains((String) value)) {
+                            newElements.add(element);
+                        }
+                    } else if (targetField.get(element).equals(value)) {
                         newElements.add(element);
                     }
                 } catch (IllegalAccessException e) {
@@ -148,10 +153,10 @@ public class DbSet<T> {
     }
 
     private void initElements() {
-        if(this.isFiltering)
+        if (this.isFiltering)
             return;
 
-        if(isDataChanged) {
+        if (isDataChanged) {
             isDataChanged = false;
             this.elements = this.dataDriver.getAll(targetClass);
             if (!elements.isEmpty()) {
@@ -160,5 +165,40 @@ public class DbSet<T> {
                 });
             }
         }
+    }
+
+    private int getNextId() {
+        if (this.nextId != -1) {
+            return this.nextId;
+        }
+        int nextIdValue = 1;
+        Field idField = this.getIdField();
+        if (idField != null) {
+            idField.setAccessible(true);
+            if (this.elements.isEmpty()) {
+                this.initElements();
+            }
+            for (T element : this.elements) {
+                try {
+                    int id = (int) idField.get(element);
+                    if (nextIdValue < id) {
+                        nextIdValue = id;
+                    }
+                } catch (IllegalAccessException ex) {
+                    throw new RuntimeException();
+                }
+            }
+        }
+
+        return nextIdValue;
+    }
+
+    private Field getIdField() {
+        Field[] fields = this.targetClass.getDeclaredFields();
+        for(Field field : fields) {
+            if(field.isAnnotationPresent(Id.class))
+                return field;
+        }
+        return null;
     }
 }

@@ -25,7 +25,7 @@ import java.util.Set;
 public class ItemRepositoryImpl implements ItemRepository {
     @PersistenceContext
     private DbContext dbContext;
-
+    private int nextId = -1;
     public ItemRepositoryImpl() {
 
     }
@@ -37,7 +37,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Optional<Item> get(int id) {
         try {
             Item item = dbContext.getDbSetOf(Item.class).findById(id);
-            return Optional.of(item);
+            return Optional.ofNullable(item);
         } catch (ApplicationException exception) {
             ErrorInfo errorInfo = new ErrorInfo();
 
@@ -68,6 +68,12 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public void create(Item item) {
+        if(this.nextId < 0) {
+            this.nextId = this.generateNextId();
+        } else {
+            this.nextId++;
+        }
+        item.setId(nextId);
         dbContext.getDbSetOf(Item.class).create(item);
     }
 
@@ -89,6 +95,15 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public boolean isExisted(int itemId) {
         return dbContext.getDbSetOf(Item.class).findById(itemId) != null;
+    }
+
+    private int generateNextId() {
+        Set<Item> items = this.getAll();
+        if (items.isEmpty())
+            return 1;
+        return items.stream().reduce(null, (nextId, item) -> {
+            return nextId.getId() < item.getId()? item : nextId;
+        }).getId();
     }
 
 }

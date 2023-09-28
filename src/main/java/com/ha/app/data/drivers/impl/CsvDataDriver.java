@@ -10,6 +10,7 @@ import com.ha.app.enums.errors.ErrorSeverity;
 import com.ha.app.enums.errors.ErrorType;
 import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
+import com.ha.app.helpers.DateConverter;
 import com.ha.app.helpers.FileHelper;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.FuzzyMappingStrategyBuilder;
@@ -25,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +49,7 @@ public class CsvDataDriver implements DataDriver {
         writer.write("\"" + fieldName + "\"");
     }
 
-    private <T> void writeOne(T object, boolean isAppending) {
+    private void writeOne(Object object, boolean isAppending) {
         try {
             String fileName = object.getClass().getSimpleName() + ".csv";
             File csvFile = FileHelper.readFile(DataConstants.DATA_FOLDER, fileName);
@@ -69,6 +71,7 @@ public class CsvDataDriver implements DataDriver {
             }
 
             // Write body
+
             writeBody(writer, fields, object);
             writer.close();
         } catch (Exception exception) {
@@ -78,7 +81,7 @@ public class CsvDataDriver implements DataDriver {
 
     private <T> void writeAll(Set<T> objects, boolean isAppending) {
         try {
-           Class targetClass = objects.toArray()[0].getClass();
+            Class targetClass = objects.toArray()[0].getClass();
             String fileName = targetClass.getSimpleName() + ".csv";
             File csvFile = FileHelper.readFile(DataConstants.DATA_FOLDER, fileName);
             try (Writer writer = new FileWriter(csvFile, isAppending)) {
@@ -94,6 +97,7 @@ public class CsvDataDriver implements DataDriver {
 
                 // Write body
                 for (Object object : objects) {
+
                     writeBody(writer, fields, object);
                 }
             } catch (IOException | IllegalAccessException ex) {
@@ -139,7 +143,10 @@ public class CsvDataDriver implements DataDriver {
             String value;
 
             if (f.get(object) != null) {
-                if (f.getType().equals(String.class)) {
+                if(f.getType().isAssignableFrom(Date.class)){
+                    value = DateConverter.formatDate((Date) f.get(object));
+                }
+                else if (f.getType().equals(String.class)) {
                     value = "\"" + f.get(object) + "\"";
                 } else {
                     value = f.get(object).toString();

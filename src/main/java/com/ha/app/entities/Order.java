@@ -3,22 +3,36 @@ package com.ha.app.entities;
 import com.ha.app.annotations.data.Entity;
 import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.OneToMany;
-
+import com.ha.app.enums.status.OrderStatus;
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 @Entity
 public class Order {
     @Id
     private int id;
 
-    @OneToMany(mappedBy = "order", childEntity = OrderItem.class)
-    List<OrderItem> orderItems;
+    private OrderStatus orderStatus = OrderStatus.UN_PAID;
 
+    @OneToMany(mappedBy = "order", childEntity = OrderItem.class)
+    Set<OrderItem> orderItems = new HashSet<>();
+
+    @CsvBindByName(column = "createAt")
+    @CsvDate("dd-MM-yyyy")
     private Date createAt;
+
+    @CsvBindByName(column = "updatedAt")
+    @CsvDate("dd-MM-yyyy")
     private Date updatedAt;
+
+    public Order() {
+
+    }
 
     public int getId() {
         return id;
@@ -26,14 +40,20 @@ public class Order {
 
     public void setId(int id) {
         this.id = id;
+        this.orderItems.forEach(orderItem -> orderItem.setOrder(this));
     }
 
-    public List<OrderItem> getOrderItems() {
+    public Set<OrderItem> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
+    public void setOrderItems(Set<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        orderItem.setOrder(this);
     }
 
     public Date getCreateAt() {
@@ -50,5 +70,30 @@ public class Order {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Order ID: " + this.id + "\n");
+        stringBuilder.append("Order Status: " + this.orderStatus + "\n");
+        stringBuilder.append("Created Date: " + this.createAt + "\n");
+        stringBuilder.append("Updated Date: " + this.updatedAt + "\n");
+        if (!this.orderItems.isEmpty()) {
+            stringBuilder.append("All order items: \n");
+            for (OrderItem orderItem : this.orderItems) {
+                stringBuilder.append(orderItem);
+            }
+        }
+
+        return stringBuilder.toString();
     }
 }

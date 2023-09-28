@@ -14,8 +14,8 @@ class ItemConsoleViewImplTest {
     private static List<Item> items;
     @BeforeEach
     void setUp() {
-        Item item1 = new Item(1, "Hoang Anh", 12.0);
-        Item item2 = new Item(2, "Hoang Em", 24.0);
+        Item item1 = new Item("Hoang Anh", 12.0);
+        Item item2 = new Item("Hoang Em", 24.0);
         items = new ArrayList<>(Arrays.asList(item1, item2));
     }
 

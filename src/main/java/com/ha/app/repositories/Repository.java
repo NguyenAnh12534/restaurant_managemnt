@@ -16,4 +16,5 @@ public interface Repository<T> {
     public void create(T item);
     public void update(T newItem);
     public void delete(int id);
+    boolean isExisted(int id);
 }

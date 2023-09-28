@@ -85,7 +85,7 @@ public class DbContext {
             ApplicationException applicationException = new ApplicationException();
 
             ErrorInfo errorInfo = new ErrorInfo();
-            errorInfo.setErrorId("EagerLoadingData");
+            errorInfo.setErrorId("EagerLoadingData - " + exception.getMessage());
             errorInfo.setContextId(this.getClass().getSimpleName());
 
             errorInfo.setErrorType(ErrorType.INTERNAL);

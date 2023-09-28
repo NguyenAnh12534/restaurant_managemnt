@@ -3,13 +3,6 @@ package com.ha.app.entities;
 import com.ha.app.annotations.data.Entity;
 import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.ManyToOne;
-
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Objects;
 
 @Entity
@@ -25,16 +18,18 @@ public class Item {
     @ManyToOne
     private Menu menu;
 
+//    @OneToMany(mappedBy = "item", childEntity = OrderItem.class)
+//    private List<OrderItem> orderItems = new ArrayList<>();
+
+
     public int menu_id;
 
-    public Item(Integer id, String name, Double price) {
-        this.id = id;
+    public Item(String name, Double price) {
         this.name = name;
         this.price = price;
     }
 
-    public Item(Integer id, String name, Double price, String description, String imageURL, String additionalDetail) {
-        this.id = id;
+    public Item( String name, Double price, String description, String imageURL, String additionalDetail) {
         this.name = name;
         this.price = price;
         this.description = description;
@@ -105,6 +100,10 @@ public class Item {
     public Menu getMenu() {
         return menu;
     }
+//    public void addOrderItem(OrderItem orderItem) {
+//        this.orderItems.add(orderItem);
+//        orderItem.setItem(this);
+//    }
 
     public void setMenu(Menu menu) {
         this.menu = menu;

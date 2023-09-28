@@ -15,16 +15,16 @@ public class CsvDataDriverTest {
 
     @Test
     public void testSaveObject() {
-        Item item = new Item(1,"new Item", 12.0);
+        Item item = new Item("new Item", 12.0);
         CsvDataDriver csvDataDriver = new CsvDataDriver();
         csvDataDriver.saveObject(item);
     }
 
     @Test
     public void testSaveAllObjects() {
-        Item item1 = new Item(1,"new Item1", 12.0);
-        Item item2 = new Item(1,"new Item2", 12.0);
-        Item item3 = new Item(1,"new Item3", 12.0);
+        Item item1 = new Item("new Item1", 12.0);
+        Item item2 = new Item("new Item2", 12.0);
+        Item item3 = new Item("new Item3", 12.0);
         Set<Item> items = new HashSet<>(Arrays.asList(item1, item2, item3));
         CsvDataDriver csvDataDriver = new CsvDataDriver();
         csvDataDriver.saveAllObjects(items);
@@ -32,16 +32,16 @@ public class CsvDataDriverTest {
 
     @Test
     public void testAppendObject() {
-        Item item = new Item(1,"new Item", 12.0);
+        Item item = new Item("new Item", 12.0);
         CsvDataDriver csvDataDriver = new CsvDataDriver();
         csvDataDriver.appendObject(item);
     }
 
     @Test
     public void testAppendAllObjects() {
-        Item item1 = new Item(1,"new Item1", 12.0);
-        Item item2 = new Item(1,"new Item2", 12.0);
-        Item item3 = new Item(1,"new Item3", 12.0);
+        Item item1 = new Item("new Item1", 12.0);
+        Item item2 = new Item("new Item2", 12.0);
+        Item item3 = new Item("new Item3", 12.0);
         Set<Item> items = new HashSet<>(Arrays.asList(item1, item2, item3));
         CsvDataDriver csvDataDriver = new CsvDataDriver();
         csvDataDriver.appendAllObjects(items);
@@ -63,8 +63,8 @@ public class CsvDataDriverTest {
         menu.setId(1);
         menu.setName("test saving Save Menu That Has Items");
 
-        Item item1 = new Item(1, "test item 1", 12.0);
-        Item item2 = new Item(2, "test item 2", 24.0);
+        Item item1 = new Item("test item 1", 12.0);
+        Item item2 = new Item("test item 2", 24.0);
 
         menu.getItems().add(item1);
         menu.getItems().add(item2);
@@ -80,8 +80,8 @@ public class CsvDataDriverTest {
         menu.setId(2);
         menu.setName("test saving Item That Belong To A Menu");
 
-        Item item1 = new Item(1, "test item 1", 12.0);
-        Item item2 = new Item(2, "test item 2", 24.0);
+        Item item1 = new Item("test item 1", 12.0);
+        Item item2 = new Item("test item 2", 24.0);
         item1.setMenu(menu);
 
         Set<Item> items = new HashSet<>(Arrays.asList(item1, item2));

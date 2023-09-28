@@ -83,16 +83,13 @@ public class ItemConsoleView extends ConsoleView {
 
     @ViewFeature
     public void createItem() {
-        System.out.println("Please enter ID of the item: ");
-        int itemId = inputHelper.getInteger();
-
         System.out.println("Please enter name of the item: ");
         String itemName = inputHelper.getLine();
 
         System.out.println("Please enter price of the item: ");
         double itemPrice = inputHelper.getDouble();
 
-        Item newItem = new Item(itemId, itemName, itemPrice);
+        Item newItem = new Item(itemName, itemPrice);
         try {
             this.itemController.create(newItem);
             System.out.println("New item has been created");

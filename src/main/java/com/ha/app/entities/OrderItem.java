@@ -6,9 +6,6 @@ import com.ha.app.annotations.data.ManyToOne;
 
 @Entity
 public class OrderItem {
-    @Id
-    private Integer id;
-
     private Integer quantity;
 
     @ManyToOne
@@ -25,13 +22,13 @@ public class OrderItem {
 
     public OrderItem(Order order, Item item) {
         this.order = order;
+        this.order.addOrderItem(this);
         this.item = item;
         this.order_id = this.order.getId();
         this.item_id = this.item.getId();
     }
+    public OrderItem() {
 
-    public Integer getId() {
-        return id;
     }
 
     public Integer getQuantity() {
@@ -48,5 +45,33 @@ public class OrderItem {
 
     public Double getHistoricalItemPrice() {
         return historicalItemPrice;
+    }
+
+    public void setItem(Item item) {
+        this.item_id = item.getId();
+        this.item = item;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+        this.order_id = order.getId();
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setHistoricalItemPrice(Double historicalItemPrice) {
+        this.historicalItemPrice = historicalItemPrice;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Item name: " + this.item.getName() + "\n");
+        stringBuilder.append("Price: " + this.historicalItemPrice + "\n");
+        stringBuilder.append("Quantity: " + this.quantity + "\n");
+
+        return stringBuilder.toString();
     }
 }
