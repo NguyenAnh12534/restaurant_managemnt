@@ -10,6 +10,7 @@ import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.exceptions.NotFoundException;
 import com.ha.app.repositories.ItemRepository;
 import com.ha.app.services.ItemService;
+import com.ha.app.services.OrderService;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -23,6 +24,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private OrderService orderService;
 
     @Override
     public Item get(int id) {

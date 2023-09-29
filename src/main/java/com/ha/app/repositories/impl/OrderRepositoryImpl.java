@@ -3,7 +3,6 @@ package com.ha.app.repositories.impl;
 import com.ha.app.annotations.Component;
 import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
-import com.ha.app.entities.Item;
 import com.ha.app.entities.Order;
 import com.ha.app.entities.OrderItem;
 import com.ha.app.exceptions.ApplicationException;
@@ -11,6 +10,7 @@ import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.repositories.OrderRepository;
 
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -73,18 +73,23 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public void update(Order newItem) {
+    public void update(Order newOrder) {
+        Order oldOrder = this.dbContext.getDbSetOf(Order.class).findById(newOrder.getId());
+        oldOrder.setOrderStatus(newOrder.getOrderStatus());
+        oldOrder.setOrderItems(newOrder.getOrderItems());
+        oldOrder.setUpdatedAt(new Date());
 
+        this.dbContext.getDbSetOf(Order.class).flush();
     }
 
     @Override
     public void delete(int id) {
-
+        this.dbContext.getDbSetOf(Order.class).deleteById(id);
     }
 
     @Override
     public boolean isExisted(int id) {
-        return false;
+        return this.dbContext.getDbSetOf(Order.class).findById(id) != null;
     }
 
     private int generateNextId() {

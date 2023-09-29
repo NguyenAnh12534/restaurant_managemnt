@@ -8,14 +8,5 @@ import java.util.Map;
 import java.util.Set;
 
 public interface ItemService extends Service<Item> {
-    Item get(int id);
-
-    Set<Item> getAll();
     Set<Item> getAllByFields(Map<Field, Object> criteria);
-
-    void create(Item item);
-
-    void update(Item newItem, int oldItemId);
-
-    void delete(int id);
 }

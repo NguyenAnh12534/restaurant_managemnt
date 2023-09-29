@@ -3,7 +3,11 @@ package com.ha.app.entities;
 import com.ha.app.annotations.data.Entity;
 import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.ManyToOne;
+import com.ha.app.annotations.data.OneToMany;
+
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Item {
@@ -18,8 +22,8 @@ public class Item {
     @ManyToOne
     private Menu menu;
 
-//    @OneToMany(mappedBy = "item", childEntity = OrderItem.class)
-//    private List<OrderItem> orderItems = new ArrayList<>();
+    @OneToMany(mappedBy = "item", childEntity = OrderItem.class)
+    private Set<OrderItem> orderItems = new HashSet<>();
 
 
     public int menu_id;
