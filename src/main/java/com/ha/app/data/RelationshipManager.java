@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * This class using simple Find-Union data structure and Quick Find algorithm to check if two entities classes are already linked
+ * This class using simple Find-Union Disjoint Set data structure and Quick Find algorithm to check if two entities classes are already linked
  * Using this algorithm, the circular loading data issue could be solved
  * In summary, when entity A load data of entity B, the isConnected has to be called first to validate if they are linked before.
  * If they are linked, the connection has a high chance of creating a circular relationship which causes a StackOverflow error.

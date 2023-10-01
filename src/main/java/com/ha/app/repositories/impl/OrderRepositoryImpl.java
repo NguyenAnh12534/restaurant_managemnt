@@ -1,12 +1,16 @@
 package com.ha.app.repositories.impl;
 
+import com.ha.app.annotations.Autowired;
 import com.ha.app.annotations.Component;
 import com.ha.app.annotations.data.PersistenceContext;
 import com.ha.app.data.DbContext;
+import com.ha.app.data.DbSet;
+import com.ha.app.entities.Item;
 import com.ha.app.entities.Order;
 import com.ha.app.entities.OrderItem;
 import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
+import com.ha.app.repositories.OrderItemRepository;
 import com.ha.app.repositories.OrderRepository;
 
 import java.lang.reflect.Field;
@@ -20,6 +24,10 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @PersistenceContext
     DbContext dbContext;
+
+    @Autowired
+    OrderItemRepository orderItemRepository;
+
 
     private int nextId = -1;
 
@@ -67,17 +75,16 @@ public class OrderRepositoryImpl implements OrderRepository {
         }
         order.setId(nextId);
         dbContext.getDbSetOf(Order.class).create(order);
+        DbSet<OrderItem> orderItemDbSet = this.dbContext.getDbSetOf(OrderItem.class);
         order.getOrderItems().forEach(orderItem -> {
-            this.dbContext.getDbSetOf(OrderItem.class).create(orderItem);
+            orderItemDbSet.create(orderItem);
         });
     }
 
     @Override
-    public void update(Order newOrder) {
-        Order oldOrder = this.dbContext.getDbSetOf(Order.class).findById(newOrder.getId());
-        oldOrder.setOrderStatus(newOrder.getOrderStatus());
-        oldOrder.setOrderItems(newOrder.getOrderItems());
-        oldOrder.setUpdatedAt(new Date());
+    public void update(Order newOrder, int oldOrderId) {
+        Order oldOrder = this.dbContext.getDbSetOf(Order.class).findById(oldOrderId);
+        oldOrder.load(newOrder);
 
         this.dbContext.getDbSetOf(Order.class).flush();
     }
@@ -96,8 +103,8 @@ public class OrderRepositoryImpl implements OrderRepository {
         Set<Order> items = this.getAll();
         if (items.isEmpty())
             return 1;
-        return items.stream().reduce(null, (nextId, item) -> {
-            return nextId.getId() < item.getId()? item : nextId;
-        }).getId();
+        return items.stream().map(item -> item.getId()).reduce((currentId, nextId) -> {
+            return currentId > nextId ? currentId : nextId;
+        }).get() + 1;
     }
 }

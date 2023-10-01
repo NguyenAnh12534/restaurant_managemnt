@@ -37,11 +37,14 @@ public class InputHelper {
         }
     }
 
-    public int getInteger() {
+    public Integer getInteger() {
         do {
             try {
                 System.out.print("Please enter an integer number: ");
-                int value = Integer.parseInt(this.getInput());
+                String input = this.getInput();
+                if(input.isBlank())
+                    return null;
+                int value = Integer.parseInt(input);
                 return value;
             } catch (ExitExcpetion ex) {
                 throw ex;
@@ -51,11 +54,14 @@ public class InputHelper {
         } while (true);
     }
 
-    public double getDouble() {
+    public Double getDouble() {
         do {
             try {
                 System.out.print("Please enter an double number: ");
-                double value = Double.parseDouble(this.getInput());
+                String input = this.getInput();
+                if(input.isBlank())
+                    return null;
+                double value = Double.parseDouble(input);
                 return value;
             } catch (ExitExcpetion ex) {
                 throw ex;
@@ -66,7 +72,7 @@ public class InputHelper {
     }
 
     public String getLine() {
-        System.out.print("Please enter a string: ");
+        System.out.print("\nPlease enter a string: ");
         String value = this.scanner.nextLine();
         if (InputConstants.EXIT_COMMAND.equals(value)) {
             throw new ExitExcpetion();
@@ -80,7 +86,7 @@ public class InputHelper {
         int selectedFieldIndex;
         while (isSelecting) {
             try {
-                selectedFieldIndex = inputHelper.getInteger();
+                selectedFieldIndex = this.getInteger();
                 isSelecting = false;
                 if (selectedFieldIndex > elements.size()) {
                     InvalidInputException invalidInputException = new InvalidInputException();
@@ -110,8 +116,7 @@ public class InputHelper {
 
 
     private String getInput() {
-        String value = this.scanner.next();
-        this.scanner.nextLine();
+        String value = this.scanner.nextLine();
         if (InputConstants.EXIT_COMMAND.equals(value)) {
             throw new ExitExcpetion();
         }

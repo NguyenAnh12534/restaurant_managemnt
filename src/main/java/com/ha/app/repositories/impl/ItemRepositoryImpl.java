@@ -54,7 +54,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Set<Item> getAllByFields(Map<Field, Object> criteria) {
         DbSet<Item> itemDbSet = this.dbContext.getDbSetOf(Item.class);
         for (Map.Entry<Field, Object> filter : criteria.entrySet()) {
-            itemDbSet = itemDbSet.filterByField(filter.getKey().getName(), filter.getValue());
+            itemDbSet = itemDbSet.filterByField(filter.getKey(), filter.getValue());
         }
 
         return itemDbSet.getAll();
@@ -78,11 +78,9 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public void update(Item newItem) {
-        Item oldItem = this.dbContext.getDbSetOf(Item.class).findById(newItem.getId());
-        oldItem.setName(newItem.getName());
-        oldItem.setPrice(newItem.getPrice());
-
+    public void update(Item newItem, int oldItemId) {
+        Item oldItem = this.dbContext.getDbSetOf(Item.class).findById(oldItemId);
+        oldItem.load(newItem);
         this.dbContext.getDbSetOf(Item.class).flush();
     }
 
@@ -101,9 +99,9 @@ public class ItemRepositoryImpl implements ItemRepository {
         Set<Item> items = this.getAll();
         if (items.isEmpty())
             return 1;
-        return items.stream().reduce(null, (nextId, item) -> {
-            return nextId.getId() < item.getId()? item : nextId;
-        }).getId();
+        return items.stream().map(item -> item.getId()).reduce((currentId, nextId) -> {
+            return currentId > nextId ? currentId : nextId;
+        }).get() + 1;
     }
 
 }

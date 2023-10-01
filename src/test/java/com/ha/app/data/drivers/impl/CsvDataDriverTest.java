@@ -52,7 +52,7 @@ public class CsvDataDriverTest {
         CsvDataDriver csvDataDriver = new CsvDataDriver();
         Set<Item> items = csvDataDriver.getAll(Item.class);
         items.forEach(item -> {
-            System.out.println(item.menu_id);
+            System.out.println(item.menuId);
         });
     }
 

@@ -4,7 +4,7 @@ import com.ha.app.enums.errors.ErrorSeverity;
 import com.ha.app.enums.errors.ErrorType;
 import com.ha.app.exceptions.ApplicationException;
 import com.ha.app.exceptions.ErrorInfo;
-import com.ha.app.exceptions.ErrorInfoFactory;
+import com.ha.app.exceptions.FileReadException;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,10 +40,9 @@ public class FileHelper {
                 Files.createDirectories(filePath.getParent());
                 Files.createFile(filePath);
             }catch (IOException ex) {
-                ApplicationException applicationException = new ApplicationException();
-                ErrorInfo errorInfo = ErrorInfoFactory.getFileReadErrorInfo(ex, directoryPath + filePath);
-                applicationException.addErrorInfo(errorInfo);
-                throw  applicationException;
+                FileReadException errorInfo = new FileReadException(ex);
+                errorInfo.addParameter("filePath", filePath.toString());
+                throw  errorInfo;
             }
         }
         return filePath.toFile();

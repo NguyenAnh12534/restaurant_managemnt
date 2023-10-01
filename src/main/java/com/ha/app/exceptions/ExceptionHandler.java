@@ -27,7 +27,7 @@ public class ExceptionHandler {
             if(applicationException.getErrorType().equals(ErrorType.CLIENT)) {
                 // The error is actually caused by the end users malfunction
                 // show the cause and also how to correct it
-                System.out.println(applicationException.getErrorInfos().peek().getUserErrorDescription());
+                System.out.println(applicationException.getErrorInfos().get(0).getUserErrorDescription());
             } else {
                 // The error is not caused by the user
                 // Therefore only show standard error message.

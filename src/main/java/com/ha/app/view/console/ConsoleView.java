@@ -2,15 +2,14 @@ package com.ha.app.view.console;
 
 import com.ha.app.annotations.ui.ViewFeature;
 import com.ha.app.exceptions.ApplicationException;
-import com.ha.app.exceptions.InvalidInputException;
 import com.ha.app.helpers.InputHelper;
-import com.ha.app.view.Renderable;
+import com.ha.app.view.Renderer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
+public abstract class ConsoleView<T extends ConsoleView> implements Renderer {
     private InputHelper inputHelper = InputHelper.getInstance();
     private List<Method> features;
     private int selectedIndex = 0;
@@ -47,7 +46,7 @@ public abstract class ConsoleView<T extends ConsoleView> implements Renderable {
             if (ex.getTargetException() instanceof ApplicationException) {
                 throw (ApplicationException) ex.getTargetException();
             }
-        } catch (IllegalAccessException ex) {
+        } catch (Exception ex) {
 
         }
     }

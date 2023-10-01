@@ -3,13 +3,12 @@ package com.ha.app.entities;
 import com.ha.app.annotations.data.Entity;
 import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.OneToMany;
+import com.ha.app.entities.builders.OrderBuilder;
 import com.ha.app.enums.status.OrderStatus;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -31,7 +30,14 @@ public class Order {
     private Date updatedAt;
 
     public Order() {
+        this.createAt =  new Date();
+        this.updatedAt = new Date();
+    }
 
+    public Order(OrderStatus orderStatus, Set<OrderItem> orderItems) {
+        this();
+        this.orderStatus = orderStatus;
+        this.orderItems = orderItems;
     }
 
     public int getId() {
@@ -49,11 +55,6 @@ public class Order {
 
     public void setOrderItems(Set<OrderItem> orderItems) {
         this.orderItems = orderItems;
-    }
-
-    public void addOrderItem(OrderItem orderItem) {
-        this.orderItems.add(orderItem);
-        orderItem.setOrder(this);
     }
 
     public Date getCreateAt() {
@@ -78,6 +79,18 @@ public class Order {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+
+    public void load(Order newOrder) {
+        this.orderStatus = newOrder.getOrderStatus() != null ? newOrder.getOrderStatus() : this.orderStatus;
+        this.orderItems = newOrder.getOrderItems() != null ? newOrder.getOrderItems() : this.orderItems;
+
+        this.updatedAt = new Date();
+    }
+
+    public OrderBuilder builder() {
+        return new OrderBuilder();
     }
 
     @Override

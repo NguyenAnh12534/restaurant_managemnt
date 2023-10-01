@@ -1,6 +1,7 @@
 package com.ha.app.data;
 
 import com.ha.app.annotations.data.Entity;
+import com.ha.app.annotations.data.ForeignKey;
 import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.ManyToOne;
 import com.ha.app.annotations.data.OneToMany;
@@ -13,13 +14,16 @@ import com.ha.app.exceptions.ErrorInfo;
 import com.ha.app.helpers.ClassHelper;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class is the container of all DbSet in the application
  * Each DbSet handles data of an Entity
+ * This class also handles eager loading data between entities
  */
 public class DbContext {
     private final DataDriver dataDriver;
@@ -32,6 +36,12 @@ public class DbContext {
         this.relationshipManager = new RelationshipManager(this.dbSetMap.keySet());
     }
 
+    /**
+     * This function get a DbSet of a particular class
+     * @param tClass must be an Entity
+     * @return
+     * @param <T>
+     */
     public <T> DbSet<T> getDbSetOf(Class<T> tClass) {
         return this.dbSetMap.get(tClass);
     }
@@ -61,8 +71,11 @@ public class DbContext {
     /**
      * This method creates a DbSet for an Entity
      * The newly created DbSet is added directly into dbSetMap
-     * @param tClass Class of the Entity of the DbSet
-     * @param <T> Type of the Entity of the DbSet
+     *
+     * @param tClass
+     *         Class of the Entity of the DbSet
+     * @param <T>
+     *         Type of the Entity of the DbSet
      */
     private <T> void addDbSetOfModal(Class<T> tClass) {
 
@@ -71,8 +84,9 @@ public class DbContext {
 
     /**
      * This method help to eagerly load data for all relationships of an Entity
-     * @param object the concrete Entity object to load data for
      *
+     * @param object
+     *         the concrete Entity object to load data for
      */
     public void eagerLoadDataForEntity(Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
@@ -92,6 +106,7 @@ public class DbContext {
             errorInfo.setErrorSeverity(ErrorSeverity.CRITICAL);
 
             errorInfo.setErrorCorrection("Fail to persisting data from relationships.");
+            errorInfo.addParameter("targetClass", object.getClass());
 
             applicationException.addErrorInfo(errorInfo);
             throw applicationException;
@@ -100,27 +115,35 @@ public class DbContext {
 
     /**
      * This method load data of a relationship field in a Entity
-     * @param field the relationship field
-     * @param object the concrete Entity object
+     *
+     * @param field
+     *         the relationship field
+     * @param object
+     *         the concrete Entity object
+     *
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
     public void eagerLoadDataForField(Field field, Object object) throws NoSuchFieldException, IllegalAccessException {
         if (field.isAnnotationPresent(ManyToOne.class)) {
-            loadDataForManyToOne(field, object);
+            loadDataForManyToOneRelationship(field, object);
         } else if (field.isAnnotationPresent(OneToMany.class)) {
-            loadDataForOneToMany(field, object);
+            loadDataForOneToManyRelationship(field, object);
         }
     }
 
     /**
      * This method load data for ManyToOne relationship
-     * @param field the field with ManyToOne relationship in an Entity
-     * @param object the concrete Entity object
+     *
+     * @param field
+     *         the field with ManyToOne relationship in an Entity
+     * @param object
+     *         the concrete Entity object
+     *
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
-    private  void loadDataForManyToOne(Field field, Object object) throws NoSuchFieldException, IllegalAccessException {
+    private void loadDataForManyToOneRelationship(Field field, Object object) throws NoSuchFieldException, IllegalAccessException {
 
         Class<?> parentClass = field.getType();
         Class<?> childClass = object.getClass();
@@ -130,13 +153,15 @@ public class DbContext {
         }
 
         Class<?> parentType = field.getType();
-        Field foreignKeyField = object.getClass().getDeclaredField(parentType.getSimpleName().toLowerCase() + "_id");
+        Field foreignKeyField = this.extractForeignKeyTo(parentClass, childClass);
 
         foreignKeyField.setAccessible(true);
-        int foreignKeyValue = foreignKeyField.getInt(object);
+        Object foreignKeyValue = foreignKeyField.get(object);
+
+        Field parentPrimaryKey = this.getDbSetOf(parentClass).extractPrimaryField();
 
         field.setAccessible(true);
-        Object parent = this.getDbSetOf(parentType).filterByField("id", foreignKeyValue).getOne();
+        Object parent = this.getDbSetOf(parentType).filterByField(parentPrimaryKey, foreignKeyValue).getOne();
         if (parent != null) {
             field.set(object, parent);
         }
@@ -144,46 +169,46 @@ public class DbContext {
 
     /**
      * This method load data for OneToMany relationship
-     * @param field the field with ManyToOne relationship in an Entity
-     * @param object the concrete Entity object
+     *
+     * @param oneToManyField
+     *         the field with ManyToOne relationship in an Entity
+     * @param object
+     *         the concrete Entity object
+     *
      * @throws NoSuchFieldException
      * @throws IllegalAccessException
      */
-    private void loadDataForOneToMany(Field field, Object object) throws NoSuchFieldException, IllegalAccessException {
-        field.setAccessible(true);
-        OneToMany oneToMany = field.getAnnotation(OneToMany.class);
-        Class<?> childClass = oneToMany.childEntity();
+    private void loadDataForOneToManyRelationship(Field oneToManyField, Object object) throws NoSuchFieldException, IllegalAccessException {
+        oneToManyField.setAccessible(true);
+        Class<?> childClass = oneToManyField.getAnnotation(OneToMany.class).childEntity();
         Class<?> parentClass = object.getClass();
 
         if (this.willCreateCircular(parentClass, childClass)) {
             return;
         }
 
-        Field primaryField = null;
+        Field parentPrimaryField = this.getDbSetOf(parentClass).extractPrimaryField();
+        parentPrimaryField.setAccessible(true);
+        Object parentPrimaryFieldValue = parentPrimaryField.get(object);
 
-        Field[] fields = object.getClass().getDeclaredFields();
+        Field childForeignKey = this.extractForeignKeyTo(parentClass, childClass);
 
-        for (Field attribute : fields) {
-            if (attribute.isAnnotationPresent(Id.class)) primaryField = attribute;
-        }
-
-        if (primaryField == null) return;
-
-        primaryField.setAccessible(true);
-        Object primaryFieldValue = primaryField.get(object);
-
-        field.setAccessible(true);
-        Object children = this.getDbSetOf(childClass).filterByField(object.getClass().getSimpleName().toLowerCase() + "_id", primaryFieldValue).getAll();
+        oneToManyField.setAccessible(true);
+        Object children = this.getDbSetOf(childClass).filterByField(childForeignKey, parentPrimaryFieldValue).getAll();
         if (children != null) {
-            field.set(object, children);
+            oneToManyField.set(object, children);
         }
     }
 
     /**
      * This method check if an eager loading operation from an Entity to another will create a circular reference or not
      * Therefore, it helps prevent stackoverflow error when eager loading data
-     * @param sourceClass the source entity
-     * @param targetClass the target entity being linked to
+     *
+     * @param sourceClass
+     *         the source entity
+     * @param targetClass
+     *         the target entity being linked to
+     *
      * @return
      */
     private boolean willCreateCircular(Class<?> sourceClass, Class<?> targetClass) {
@@ -194,4 +219,45 @@ public class DbContext {
         this.relationshipManager.link(sourceClass, targetClass);
         return false;
     }
+
+    /**
+     * This method extracts all fields that are marked as Foreign key in a class
+     *
+     * @param targetClass
+     *
+     * @return a list of fields
+     */
+    private List<Field> extractForeignKeyFields(Class<?> targetClass) {
+        if (!targetClass.isAnnotationPresent(Entity.class)) {
+            throw new IllegalArgumentException("Class is not an Entity");
+        }
+        return Arrays.stream(targetClass.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(ForeignKey.class))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * This method extract foreign key to a parent class from a child class
+     * Both classes must be Entities
+     *
+     * @param parentClass
+     * @param childClass
+     *
+     * @return
+     */
+    private Field extractForeignKeyTo(Class<?> parentClass, Class<?> childClass) {
+        if (!parentClass.isAnnotationPresent(Entity.class)) {
+            throw new IllegalArgumentException("Class is not an Entity");
+        }
+
+        List<Field> foreignKeyFields = this.extractForeignKeyFields(childClass);
+
+        for (Field foreignKeyField : foreignKeyFields) {
+            if (foreignKeyField.getAnnotation(ForeignKey.class).parentClass().equals(parentClass)) {
+                return foreignKeyField;
+            }
+        }
+        throw new IllegalArgumentException("Foreign key to not found");
+    }
+
 }

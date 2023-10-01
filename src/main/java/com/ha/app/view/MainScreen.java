@@ -14,7 +14,7 @@ import java.util.List;
  * This class handle View Selection
  */
 public class MainScreen {
-    List<Renderable> crudViews = new ArrayList<>();
+    List<Renderer> crudViews = new ArrayList<>();
     private int currentViewIndex;
     private InputHelper inputHelper = InputHelper.getInstance();
 
@@ -25,7 +25,7 @@ public class MainScreen {
     private void initializeViews(List<Bean> crudViewBeans) {
         crudViewBeans.forEach(viewBean -> {
             try {
-                crudViews.add((Renderable) viewBean.getInstance());
+                crudViews.add((Renderer) viewBean.getInstance());
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -63,7 +63,7 @@ public class MainScreen {
     }
 
     private void renderSelectView() {
-        Renderable selectedView = this.crudViews.get(currentViewIndex);
+        Renderer selectedView = this.crudViews.get(currentViewIndex);
         System.out.println("\nCurrent view: " + selectedView.getClass().getSimpleName());
         selectedView.render();
     }

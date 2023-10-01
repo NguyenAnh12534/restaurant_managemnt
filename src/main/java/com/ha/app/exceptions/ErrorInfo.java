@@ -93,6 +93,9 @@ public class ErrorInfo {
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
+    public void addParameter(String parameterName, Object parameterValue) {
+        this.parameters.put(parameterName, parameterValue);
+    }
 
     @Override
     public String toString() {

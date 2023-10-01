@@ -66,9 +66,7 @@ public class ItemServiceImpl implements ItemService {
             throw notFoundException;
         }
 
-        newItem.setId(oldItemId);
-
-        this.itemRepository.update(newItem);
+        this.itemRepository.update(newItem, oldItemId);
     }
 
     @Override

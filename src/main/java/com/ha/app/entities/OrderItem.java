@@ -1,33 +1,43 @@
 package com.ha.app.entities;
 
 import com.ha.app.annotations.data.Entity;
-import com.ha.app.annotations.data.Id;
+import com.ha.app.annotations.data.ForeignKey;
 import com.ha.app.annotations.data.ManyToOne;
+import com.ha.app.entities.builders.OrderItemBuilder;
 
 @Entity
 public class OrderItem {
     private Integer quantity;
 
     @ManyToOne
-    private Order order;
+    private  Order order;
 
-    private int order_id;
+    @ForeignKey(parentClass = Order.class)
+    private int orderId;
 
     @ManyToOne
     private Item item;
 
-    private int item_id;
+    @ForeignKey(parentClass = Item.class)
+    private int itemId;
 
     private Double historicalItemPrice;
 
     public OrderItem(Order order, Item item) {
         this.order = order;
-        this.order.addOrderItem(this);
+        this.order.getOrderItems().add(this);
         this.item = item;
-        this.order_id = this.order.getId();
-        this.item_id = this.item.getId();
+        this.orderId = this.order.getId();
+        this.itemId = this.item.getId();
     }
     public OrderItem() {
+
+    }
+
+    public OrderItem(Order order, Item item, int quantity) {
+        this.setOrder(order);
+        this.setItem(item);
+        this.quantity = quantity;
 
     }
 
@@ -48,21 +58,26 @@ public class OrderItem {
     }
 
     public void setItem(Item item) {
-        this.item_id = item.getId();
+        if(this.item != null)
+            return;
+        this.itemId = item.getId();
         this.item = item;
+        this.historicalItemPrice = this.item.getPrice();
     }
 
     public void setOrder(Order order) {
+        if(this.order != null)
+            return;
         this.order = order;
-        this.order_id = order.getId();
+        this.orderId = order.getId();
     }
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
-    public void setHistoricalItemPrice(Double historicalItemPrice) {
-        this.historicalItemPrice = historicalItemPrice;
+    public static OrderItemBuilder builder() {
+        return new OrderItemBuilder();
     }
 
     @Override

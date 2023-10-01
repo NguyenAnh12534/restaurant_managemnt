@@ -41,29 +41,28 @@ public class DbSet<T> {
         this.targetClass = dbSet.targetClass;
     }
 
-    public DbSet<T> filterByField(String fieldName, Object value) {
+    public DbSet<T> filterByField(Field filterField, Object value) {
         this.initElements();
 
         DbSet<T> newDbSet = new DbSet<>(this);
         newDbSet.isFiltering = true;
         Set<T> newElements = new HashSet<>();
 
-        Field targetField = ClassHelper.getFieldByName(this.targetClass, fieldName);
 
-        if (targetField == null) {
+        if (filterField == null) {
             return newDbSet;
         }
 
-        if (value.getClass().isAssignableFrom(targetField.getType())) {
-            targetField.setAccessible(true);
+        if (value.getClass().isAssignableFrom(filterField.getType())) {
+            filterField.setAccessible(true);
             newDbSet.elements.forEach(element -> {
                 try {
-                    if (targetField.getType().equals(String.class)) {
-                        String databaseValue = (String) targetField.get(element);
+                    if (filterField.getType().equals(String.class)) {
+                        String databaseValue = (String) filterField.get(element);
                         if (databaseValue.contains((String) value)) {
                             newElements.add(element);
                         }
-                    } else if (targetField.get(element).equals(value)) {
+                    } else if (filterField.get(element).equals(value)) {
                         newElements.add(element);
                     }
                 } catch (IllegalAccessException e) {
@@ -78,7 +77,7 @@ public class DbSet<T> {
 
     public Set<T> getAll() {
         if (!isFiltering) {
-            initElements();
+            this.initElements();
         }
         return elements;
     }
@@ -107,15 +106,16 @@ public class DbSet<T> {
 
     public boolean create(Set<T> items) {
         this.dataDriver.appendAllObjects(items);
+        this.isDataChanged = true;
         return true;
     }
 
-    public T findById(int id) {
-        return this.filterByField("id", id).getOne();
+    public T findById(Object id) {
+        return this.filterByField(this.extractPrimaryField(), id).getOne();
     }
 
     public void deleteById(int id) {
-        this.deleteByField("id", id);
+        this.deleteByField(this.extractPrimaryField(), id);
     }
 
     public void flush() {
@@ -123,16 +123,11 @@ public class DbSet<T> {
             this.dataDriver.saveAllObjects(this.elements);
         else
             this.dataDriver.clearData(this.targetClass);
+        this.isDataChanged = true;
     }
 
-    private void deleteByField(String fieldName, Object fieldValue) {
+    private void deleteByField(Field selectedField, Object fieldValue) {
         this.initElements();
-
-        Field selectedField = ClassHelper.getFieldByName(targetClass, fieldName);
-
-        if (selectedField == null) {
-            throw new IllegalArgumentException();
-        }
 
         selectedField.setAccessible(true);
 
@@ -172,7 +167,7 @@ public class DbSet<T> {
             return this.nextId;
         }
         int nextIdValue = 1;
-        Field idField = this.getIdField();
+        Field idField = this.extractPrimaryField();
         if (idField != null) {
             idField.setAccessible(true);
             if (this.elements.isEmpty()) {
@@ -193,12 +188,17 @@ public class DbSet<T> {
         return nextIdValue;
     }
 
-    private Field getIdField() {
+    /**
+     * This function extract the field marked with as Id in a class
+     * @return
+     */
+    public Field extractPrimaryField() {
         Field[] fields = this.targetClass.getDeclaredFields();
         for(Field field : fields) {
             if(field.isAnnotationPresent(Id.class))
                 return field;
         }
-        return null;
+        throw new IllegalArgumentException("Class doesn't contain a Id field");
+
     }
 }

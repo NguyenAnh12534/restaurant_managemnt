@@ -69,7 +69,7 @@ public class MenuServiceImpl implements MenuService {
         Item itemToAdd = itemToAddOptional.get();
         Menu menu = menuOptional.get();
         menu.getItems().add(itemToAdd);
-        this.menuRepository.update(menu);
+        this.menuRepository.update(menu, menuId);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class MenuServiceImpl implements MenuService {
 
         newMenu.setId(oldMenuId);
 
-        this.menuRepository.update(newMenu);
+        this.menuRepository.update(newMenu, oldMenuId);
     }
 
     @Override

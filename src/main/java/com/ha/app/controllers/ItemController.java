@@ -4,6 +4,7 @@ import com.ha.app.annotations.Autowired;
 import com.ha.app.annotations.Controller;
 import com.ha.app.entities.Item;
 import com.ha.app.services.ItemService;
+import com.ha.app.services.impl.ItemServiceImpl;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -21,7 +22,7 @@ public class ItemController{
     }
 
     public Set<Item> getAll() {
-        Set<Item> items = itemService.getAll();
+        Set<Item> items = this.itemService.getAll();
         return items;
     }
 
@@ -30,7 +31,7 @@ public class ItemController{
     }
 
     public void create(Item item) {
-        itemService.create(item);
+        this.itemService.create(item);
     }
 
     public void update(Item newItem, int oldItemId) {

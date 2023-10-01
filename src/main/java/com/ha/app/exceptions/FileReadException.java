@@ -3,31 +3,25 @@ package com.ha.app.exceptions;
 import com.ha.app.enums.errors.ErrorSeverity;
 import com.ha.app.enums.errors.ErrorType;
 
-import javax.swing.plaf.basic.BasicTreeUI;
-
-/**
- * This exception is thrown when an element can not be found
- */
-public class NotFoundException extends ApplicationException{
+public class FileReadException extends ApplicationException{
     ErrorInfo errorInfo;
-    public NotFoundException() {
+    public FileReadException() {
         super();
         this.errorInfo = new ErrorInfo();
 
         errorInfo.setErrorSeverity(ErrorSeverity.WARNING);
         errorInfo.setErrorType(ErrorType.CLIENT);
-        errorInfo.setErrorId("NotFound");
-        errorInfo.setErrorCorrection("Require user to choose another element");
-        errorInfo.setUserErrorDescription("Can not find desired element");
-        errorInfo.setErrorDescription("User looked for a non-existed element");
+        errorInfo.setErrorId("FileReadError");
+        errorInfo.setErrorCorrection("Validate file path");
+        errorInfo.setUserErrorDescription("Internal Error");
+        errorInfo.setErrorDescription("System encounter an error while processing file");
 
         super.addErrorInfo(this.errorInfo);
     }
 
-    public NotFoundException(Throwable cause) {
+    public FileReadException(Throwable cause) {
         this();
         this.errorInfo.setCause(cause);
-        super.addErrorInfo(this.errorInfo);
     }
 
     public void setContext(String context) {

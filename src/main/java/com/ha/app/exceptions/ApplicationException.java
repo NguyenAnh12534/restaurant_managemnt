@@ -3,6 +3,8 @@ package com.ha.app.exceptions;
 import com.ha.app.enums.errors.ErrorSeverity;
 import com.ha.app.enums.errors.ErrorType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -11,7 +13,7 @@ import java.util.Stack;
  */
 public class ApplicationException extends RuntimeException {
 
-    private Stack<ErrorInfo> errorInfos = new Stack<>();
+    private List<ErrorInfo> errorInfos = new ArrayList<>();
 
     public ApplicationException() {
 
@@ -21,7 +23,7 @@ public class ApplicationException extends RuntimeException {
         this.errorInfos.add(errorInfo);
     }
 
-    public Stack<ErrorInfo> getErrorInfos() {
+    public List<ErrorInfo> getErrorInfos() {
         return this.errorInfos;
     }
 

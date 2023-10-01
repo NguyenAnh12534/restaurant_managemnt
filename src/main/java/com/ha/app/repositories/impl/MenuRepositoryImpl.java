@@ -80,8 +80,8 @@ public class MenuRepositoryImpl implements MenuRepository {
     }
 
     @Override
-    public void update(Menu newMenu) {
-        Menu oldMenu = this.dbContext.getDbSetOf(Menu.class).findById(newMenu.getId());
+    public void update(Menu newMenu, int oldMenuId) {
+        Menu oldMenu = this.dbContext.getDbSetOf(Menu.class).findById(oldMenuId);
         oldMenu.setName(newMenu.getName());
         oldMenu.setItems(newMenu.getItems());
 

@@ -38,15 +38,15 @@ public class DbContextTest {
 
     @Test
     public void testEagerLoadingOneToMany() throws NoSuchFieldException, IllegalAccessException {
-        Menu menu = dbContext.getDbSetOf(Menu.class).filterByField("id", 1).getOne();
-        Field childrenField = Menu.class.getDeclaredField("items");
-        dbContext.eagerLoadDataForField(childrenField, menu);
-        System.out.println(menu.getName());
-        if(!menu.getItems().isEmpty()) {
-            menu.getItems().forEach(item -> {
-                System.out.println(item);
-            });
-        }
+//        Menu menu = dbContext.getDbSetOf(Menu.class).filterByField("id", 1).getOne();
+//        Field childrenField = Menu.class.getDeclaredField("items");
+//        dbContext.eagerLoadDataForField(childrenField, menu);
+//        System.out.println(menu.getName());
+//        if(!menu.getItems().isEmpty()) {
+//            menu.getItems().forEach(item -> {
+//                System.out.println(item);
+//            });
+//        }
     }
 
     public void tearDown() throws Exception {

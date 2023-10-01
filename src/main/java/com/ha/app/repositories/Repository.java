@@ -14,7 +14,7 @@ public interface Repository<T> {
     Set<T> getAllByFields(Map<Field, Object> criteria);
     public Set<T> getAll();
     public void create(T item);
-    public void update(T newItem);
+    public void update(T newItem, int oldItemId);
     public void delete(int id);
     boolean isExisted(int id);
 }

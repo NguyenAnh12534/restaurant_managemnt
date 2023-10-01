@@ -2,7 +2,6 @@ package com.ha.app.services.impl;
 
 import com.ha.app.annotations.Autowired;
 import com.ha.app.annotations.Component;
-import com.ha.app.entities.Item;
 import com.ha.app.entities.Order;
 import com.ha.app.entities.OrderItem;
 import com.ha.app.exceptions.NotFoundException;
@@ -22,9 +21,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     ItemRepository itemRepository;
-
-    @Autowired
-    ItemService itemService;
 
     @Override
     public Order get(int id) {
@@ -59,9 +55,7 @@ public class OrderServiceImpl implements OrderService {
             throw notFoundException;
         }
 
-        newOrder.setId(oldOrderId);
-
-        this.orderRepository.update(newOrder);
+        this.orderRepository.update(newOrder, oldOrderId);
     }
 
     @Override
@@ -91,8 +85,8 @@ public class OrderServiceImpl implements OrderService {
 
                 throw notFoundException;
             }
-            order.addOrderItem(orderItem);
-            this.orderRepository.update(order);
+
+            this.orderRepository.update(order, orderId);
         } catch (NoSuchElementException noSuchElementException) {
             NotFoundException notFoundException = new NotFoundException();
             notFoundException.setContext("AddingNewOrderItem");

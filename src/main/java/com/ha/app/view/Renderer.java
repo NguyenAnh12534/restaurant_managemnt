@@ -1,5 +1,5 @@
 package com.ha.app.view;
 
-public interface Renderable {
+public interface Renderer {
     void render();
 }

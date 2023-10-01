@@ -1,9 +1,11 @@
 package com.ha.app.entities;
 
 import com.ha.app.annotations.data.Entity;
+import com.ha.app.annotations.data.ForeignKey;
 import com.ha.app.annotations.data.Id;
 import com.ha.app.annotations.data.ManyToOne;
 import com.ha.app.annotations.data.OneToMany;
+import com.ha.app.entities.builders.ItemBuilder;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -26,7 +28,8 @@ public class Item {
     private Set<OrderItem> orderItems = new HashSet<>();
 
 
-    public int menu_id;
+    @ForeignKey(parentClass = Menu.class)
+    public int menuId;
 
     public Item(String name, Double price) {
         this.name = name;
@@ -61,7 +64,7 @@ public class Item {
         this.name = name;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
@@ -104,14 +107,22 @@ public class Item {
     public Menu getMenu() {
         return menu;
     }
-//    public void addOrderItem(OrderItem orderItem) {
-//        this.orderItems.add(orderItem);
-//        orderItem.setItem(this);
-//    }
 
     public void setMenu(Menu menu) {
         this.menu = menu;
-        this.menu_id = menu.getId();
+        this.menuId = menu.getId();
+    }
+
+    public void load(Item item) {
+        this.name = item.getName();
+        this.description = item.getDescription() != null ? item.getDescription() : this.description;
+        this.price = item.getPrice() != null ? item.getPrice() : this.price;
+        this.imageURL = item.getImageURL() != null ? item.getImageURL() : this.imageURL;
+        this.additionalDetail = item.getAdditionalDetail() != null ? item.getAdditionalDetail() : this.additionalDetail;
+    }
+
+    public static ItemBuilder build() {
+        return new ItemBuilder();
     }
 
     @Override
@@ -130,8 +141,8 @@ public class Item {
         stringBuilder.append(", Additional detail: ");
         stringBuilder.append(this.additionalDetail);
         stringBuilder.append(", Menu ID: ");
-        stringBuilder.append(this.menu_id);
-        if (this.menu_id != 0) {
+        stringBuilder.append(this.menuId);
+        if (this.menuId != 0) {
             stringBuilder.append(", ");
             stringBuilder.append(this.menu);
         }
